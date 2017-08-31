@@ -75,8 +75,8 @@ def parse_first_line(line):
 		else:
 			accpetance_matrix.append(DataType.SYMBOL)
 			
-	print col_names
-	print accpetance_matrix
+	#print col_names
+	#print accpetance_matrix
 
 	
 	
@@ -121,13 +121,16 @@ if __name__ == '__main__':
 	
 		buff = ''
 		continue_nextl = False
-		line_num = 2
+		line_num = 0
 		
 		for line in fp:
+			line_num = line_num + 1	
+			
 			line = remove_commented_str(line)
 			
 			# Do nothing if the whole line is commented
 			if len(line) == 0:
+				print "Commented line at %d"%line_num
 				continue
 				
 			line = line.strip()
@@ -158,11 +161,12 @@ if __name__ == '__main__':
 					if vals_row is not None and is_acceptable(vals_row):
 						table.append(vals_row)		
 						process_data(vals_row)
+						print "Processed line %d"% line_num
 					else:
-						print "Invalid row at line %d"%line_num
+						print "Invalid data found on line %d"%line_num
 						
-			line_num = line_num + 1
 			
-		print table
+			
+		#print table
 			
 		
