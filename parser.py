@@ -1,9 +1,44 @@
 import sys
+#import enum
+
+class DataType():
+	''' Enums to identify data types '''
+	IGNORE = 0
+	NUMBER = 1
+	SYMBOL = 2
 
 col_names = []
 accpetance_matrix = []
-values = []
+table = []
 
+def process_data(row):
+	''' Process data '''
+	pass
+	
+def isfloat(val):
+	try:
+		float(val)
+		return True
+	except:
+		return False
+		
+		
+def is_acceptable(row):
+	''' Check if the given row contains valid data '''
+	global accpetance_matrix
+	
+	for i in range(len(row)):
+		x = row[i]
+		
+		if accpetance_matrix[i] == DataType.IGNORE:
+			continue
+			
+		if isfloat(x) and accpetance_matrix[i] != DataType.NUMBER:
+			return False
+		
+		if not isfloat(x) and accpetance_matrix[i]!= DataType.SYMBOL:
+			return False
+	return True
 
 def parse_val(s):
 	''' Attempt to convert the string to float. Return the string, if it fails'''
@@ -31,7 +66,15 @@ def parse_first_line(line):
 	
 	line_split = line.split(',')
 	col_names = [ x.strip() for x in line_split]
-	accpetance_matrix = [ not x.startswith('?') for x in col_names ]
+	
+	for x in col_names:
+		if x.startswith('?'):
+			accpetance_matrix.append(DataType.IGNORE)
+		elif x.startswith('$') or x.startswith('>') or x.startswith('<'):
+			accpetance_matrix.append(DataType.NUMBER)
+		else:
+			accpetance_matrix.append(DataType.SYMBOL)
+			
 	print col_names
 	print accpetance_matrix
 
@@ -52,15 +95,13 @@ def parse_line(line, line_num):
 	
 	# Print error message if the number of columns are mismatching
 	if len(line_split) != len(col_names):
-		print "Wrong number of columns found at %d"%line_num
 		return None
 	
-	print line
+	#print line
 	vals = []
 	for i in range(len(line_split)):
-		if accpetance_matrix[i]:
-			val = parse_val(line_split[i].strip())
-			vals.append(val)
+		val = parse_val(line_split[i].strip())
+		vals.append(val)
 	return vals
 	
 	
@@ -100,23 +141,28 @@ if __name__ == '__main__':
 					buff = buff + line
 					continue_nextl = True
 					continue
+					
 				else:
+					vals_row = None
+					
 					if continue_nextl:
 						continue_nextl = False
 						buff = buff + line
-						
-						#Only add valid rows
 						vals_row = parse_line(buff,line_num)
-						if vals_row is not None:
-							values.append(vals_row)
-							
 						buff = ''
+						
 					else:
-						#Only add valid rows
 						vals_row = parse_line(line,line_num)
-						if vals_row is not None:
-							values.append(vals_row)
+						
+					#Only add valid rows
+					if vals_row is not None and is_acceptable(vals_row):
+						table.append(vals_row)		
+						process_data(vals_row)
+					else:
+						print "Invalid row at line %d"%line_num
 						
 			line_num = line_num + 1
+			
+		print table
 			
 		
