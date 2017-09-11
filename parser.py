@@ -1,4 +1,5 @@
 import sys
+import datetime
 #import enum
 
 class DataType():
@@ -109,6 +110,10 @@ def parse_line(line, line_num):
 
 	
 if __name__ == '__main__':
+	start_time = datetime.datetime.now()
+	
+	parsed_file = open("parsed.txt","w+")
+	
 	is_first = True
 	
 	if len(sys.argv) < 2:
@@ -162,11 +167,19 @@ if __name__ == '__main__':
 						table.append(vals_row)		
 						process_data(vals_row)
 						print "Processed line %d"% line_num
+						print>>parsed_file, vals_row
+						#parsed_file.write(str(vals_row))
+						#print "Data = ",vals_row
 					else:
-						print "Invalid data found on line %d"%line_num
+						print >> sys.stderr, "Invalid data found on line %d"%line_num
 						
 			
-			
+		end_time = datetime.datetime.now()	
+		
+		print "\n\nTime taken to parse = %s"%str(end_time-start_time)
+		print "\nParsed data is saved in parsed.txt"
 		#print table
+		
+		parsed_file.close()
 			
 		
