@@ -166,9 +166,8 @@ if __name__ == '__main__':
 					if vals_row is not None and is_acceptable(vals_row):
 						table.append(vals_row)		
 						process_data(vals_row)
-						print "Processed line %d"% line_num
+						#print "Processed line %d"% line_num
 						print>>parsed_file, vals_row
-						#parsed_file.write(str(vals_row))
 						#print "Data = ",vals_row
 					else:
 						print >> sys.stderr, "Invalid data found on line %d"%line_num
