@@ -74,7 +74,7 @@ def parse_line(line, line_num):
     if line[-1] == ',':
         return False
 
-    print "Line = %d"%line_num
+    #print "Line = %d"%line_num
 
     # call add row here
     tbl.add_row(line)
@@ -139,14 +139,14 @@ if __name__ == '__main__':
 
         end_time = datetime.datetime.now()
 
-        print "\n\nTime taken to parse = %s" % str(end_time - start_time)
-        print "\nParsed data is saved in parsed.txt"
+        #print "\n\nTime taken to parse = %s" % str(end_time - start_time)
+        #print "\nParsed data is saved in parsed.txt"
         # print table
 
         parsed_file.close()
 
         sorted_dscores = tbl.get_sorted_indices()
-        print sorted_dscores
+        #print sorted_dscores
 
         print "Printing top 5"
         for i in sorted_dscores[:-6:-1]:
