@@ -1,5 +1,6 @@
-# FSS-HW1
-CSV Parser
+# FSS-HW
+
+## HW1 - CSV Parser
 
 ### Description
 Read each line, kill whitepsace and anything after comment characters (#), break each line on comma, read rows into a list of lists (one list per row), converting strings to numbers where appropriate. Note that some column headers contain ?: all such columns should be ignored. For now you can ignore the other magic characters in row1.
@@ -24,3 +25,11 @@ Error logs are printed on stderr. Example:
 Time taken to parse the file is shown on stdout. Example:
 
 `Time taken to parse = 0:00:00.275000`
+
+<br><br><br><br>
+
+## HW2 - Table Parser
+
+Usage:
+
+`python table_parser.py <filename.csv>`
