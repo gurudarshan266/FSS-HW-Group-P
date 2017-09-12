@@ -7,6 +7,7 @@ class SYM:
         self.n = 0
 
     def update(self, s):
+        s = str(s)
         if s not in self.counter:
             self.counter[s] = 0
         self.counter[s] = self.counter[s] + 1
