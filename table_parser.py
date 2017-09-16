@@ -147,12 +147,13 @@ if __name__ == '__main__':
 
         sorted_dscores = tbl.get_sorted_indices()
         #print sorted_dscores
-
+        print "Headers"
+        print tbl.headers
         print "Printing top 5"
         for i in sorted_dscores[:-6:-1]:
             print tbl.Rows[i[0]].cells
 
         print "Printing bottom 5"
-        for i in sorted_dscores[:5]:
+        for i in (sorted_dscores[:5])[::-1]:
             print tbl.Rows[i[0]].cells
 

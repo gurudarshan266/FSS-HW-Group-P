@@ -100,7 +100,7 @@ class Tbl:
         # Update the containers
         for i in range(len(vals)):
             if self.datatype_matrix[i]&0x3 != DataType.IGNORE:
-                self.containers[i].update(val)
+                self.containers[i].update(vals[i])
 
         r = Row(vals,self.goals_index,self.weights)
         self.Rows.append(r)
