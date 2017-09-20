@@ -5,3 +5,4 @@ class DataType():
     SYMBOL = 2
     MIN_GOAL = 4
     MAX_GOAL = 8
+

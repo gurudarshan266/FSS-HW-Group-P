@@ -10,6 +10,14 @@ class NUM:
         self.arr = []
         self.mean = 0.0
         self.sd = 0.0
+        self.n = 0
+
+    @classmethod
+    def createNUM(cls,arr):
+        num = NUM()
+        for x in arr:
+            num.update(x)
+        return num
 
     def update(self, x):
         x = float(x)
@@ -17,10 +25,12 @@ class NUM:
         self.max = max(self.max, x)
         self.min = min(self.min, x)
 
-        n = len(self.arr) + 1
+        self.n = len(self.arr)
+        n = self.n*1.0
+
         old_mean = self.mean
 
-        self.mean = (old_mean * 1.0) + ((x - old_mean) / n)
+        self.mean = (old_mean * 1.0) + ((x - old_mean)/ n)
 
         variance = (((n - 1) * self.sd * self.sd) + (x - old_mean) * (x - self.mean)) / n
 
@@ -39,3 +49,4 @@ if __name__ == '__main__':
     for x in arr:
         num.update(x)
     print num.arr, num.min, num.max, num.mean, num.sd
+    print num.normalize(60)
