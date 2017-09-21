@@ -6,15 +6,13 @@ import UDiscrete
 import copy
 import sys
 
-def SupervisedDiscrete(things,x=None,y=None,nump=None,lessp=None):
+def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
     y = y or (lambda p:p[-1])
-    nump = nump==None and True or nump
-    lessp = lessp==None and True or lessp
 
     better = lessp and (lambda p,q:  p<q) or (lambda p,q:  p>q)
     what = nump and NUM or SYM
-    z = nump and (lambda num: num.sd)
-    breaks = {}
+    compute_spread = nump and (lambda num: num.sd)
+    break_points = {}
     ranges = UDiscrete.UDiscretize(things,x)
     ranges = [None]+ranges
 
@@ -30,21 +28,21 @@ def SupervisedDiscrete(things,x=None,y=None,nump=None,lessp=None):
         _memo[here] = b4
         return _memo[here]
 
-    def combine(lo, hi, all, bin, lvl):
-        best = z(all)
+    def combine(low, high, all, bin, lvl):
+        best = compute_spread(all)
         lmemo = {}
         rmemo = {}
 
-        memo(hi, lo, lmemo)
-        memo(lo, hi, rmemo)
+        memo(high, low, lmemo)
+        memo(low, high, rmemo)
 
-        cut,rbest,lbest=None,0.0,0.0
+        cut, rbest, lbest=None,0.0,0.0
 
-        for j in range(lo,hi):
+        for j in range(low, high):
             l = lmemo[j]
             r = rmemo[j+1]
 
-            tmp = l.n/all.n*z(l) + r.n/all.n*z(r)
+            tmp = l.n/all.n*compute_spread(l) + r.n/all.n*compute_spread(r)
             if better(tmp, best):
                 cut = j
                 best = tmp
@@ -53,19 +51,19 @@ def SupervisedDiscrete(things,x=None,y=None,nump=None,lessp=None):
 
         bin = 0
 
-        if cut!=None :
-            bin = combine(lo, cut, lbest, bin, lvl+1)+1
-            bin = combine(cut+1, hi, rbest, bin, lvl+1)
+        if cut != None :
+            bin = combine(low, cut, lbest, bin, lvl + 1) + 1
+            bin = combine(cut + 1, high, rbest, bin, lvl + 1)
         else:
-            if bin not in breaks:
-                breaks[bin] = -1e-32
-            if ranges[hi].max > breaks[bin]:
-                breaks[bin] = ranges[hi].max
+            if bin not in break_points:
+                break_points[bin] = -1e-32
+            if ranges[high].max > break_points[bin]:
+                break_points[bin] = ranges[high].max
 
         return bin
 
     combine(1, len(ranges)-1, memo(1,len(ranges)-1,{}), 1, 0)
-    return breaks
+    return break_points
 
 
 
