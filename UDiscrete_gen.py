@@ -12,6 +12,7 @@ def klass(x):
         return 0.9 + random.random()/N
 
 if __name__ == '__main__':
+    random.seed(random.randint(0,1000))
     arr = []
     with open("UD_sample.txt","w+") as fp:
         for i in range(N):

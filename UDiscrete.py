@@ -11,24 +11,25 @@ def update(arr):
     bin_size = math.floor(math.sqrt(N))
     epsilon = 0.2*num_arr.sd
 
-    print "SD = %f"%num_arr.sd
-    print  "bin size = %d"%int(bin_size)
-    print "Epsilon = %f"%epsilon
+    # print "SD = %f"%num_arr.sd
+    # print  "bin size = %d"%int(bin_size)
+    # print "Epsilon = %f"%epsilon
 
     bins = []
     r = Range()
     last = -float("inf")
     last_range_max = 0.0
 
-    r.update(arr[N-1])
-    last = arr[N-1]
+    r.update(arr[0])
+    last = arr[0]
     for i in range(1,len(arr)):
-        x = arr[N-i-1]
+        x = arr[i]
 
-        if x < last and \
-                        r.span > epsilon and \
+        if      x > last and \
+                r.span > epsilon and \
                 r.n > bin_size and \
-                r.max - x > epsilon and len(bins)<bin_size-1:
+                x - r.max > epsilon and \
+                len(bins)<bin_size-1:
             # add the Range object to the bins array
             bins.append(r)
             last_range_max = r.max
@@ -42,6 +43,25 @@ def update(arr):
     return bins
 
 
+# t is the table
+# x is the function used to extract the data
+def UDiscretize(t,x=None):
+    x = x or (lambda p: p[0])
+    arr = []
+    for row in t:
+        val = x(row)
+        if isFloat(val):
+            arr.append(float(val))
+    print arr
+    # Sort the array
+    arr.sort()
+    bins = update(arr)
+    print "\nUnsupervised discretization:"
+    for i in range(len(bins)):
+        print "x\t%d\t%s" % (i + 1, bins[i])
+
+    return bins
+
 
 if __name__ == '__main__':
 
@@ -49,7 +69,7 @@ if __name__ == '__main__':
         print "Usage: \n %s <file>" % (sys.argv[0])
         sys.exit(-1)
 
-    arr = []
+    table = []
 
     in_file = sys.argv[1]
 
@@ -57,18 +77,11 @@ if __name__ == '__main__':
     with open(in_file, "r") as fp:
         for line in fp:
             line = line.strip()
-            x,y = line.split()[:2]
-            if isFloat(x):
-                arr.append(float(x))
+            table.append(line.split())
 
-    # Sort the array
-    arr.sort()
+    #print bins
+    bins = UDiscretize(table)
 
-    print arr
-    bins = update(arr)
-    print bins
-    for bin in bins:
-        print bin
 
 
 

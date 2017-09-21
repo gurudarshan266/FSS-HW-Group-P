@@ -9,6 +9,7 @@ class NUM:
         self.max = -float('inf')
         self.arr = []
         self.mean = 0.0
+        self.m2 = 0
         self.sd = 0.0
         self.n = 0
 
@@ -29,12 +30,23 @@ class NUM:
         n = self.n*1.0
 
         old_mean = self.mean
+        delta = (x - old_mean)*1.0
 
-        self.mean = (old_mean * 1.0) + ((x - old_mean)/ n)
+        self.mean = (old_mean * 1.0) + (delta/ n)
 
-        variance = (((n - 1) * self.sd * self.sd) + (x - old_mean) * (x - self.mean)) / n
+        self.m2 = self.m2 + delta*(x-self.mean)
 
-        self.sd = math.sqrt(variance) * 1.0
+        if self.n > 1:
+            self.sd = math.sqrt(self.m2/(self.n-1))*1.0
+
+        #variance = (((n - 1) * self.sd * self.sd) + (x - old_mean) * (x - self.mean)) / n
+
+        #self.sd = math.sqrt(variance) * 1.0
+
+    def updates(self, table, f=None):
+        f = f or (lambda p:p)
+        for x in table:
+            self.update(f(x))
 
     def normalize(self, x):
         y = ((x - self.min) * 1.0) / (self.max - self.min + 1e-32)
