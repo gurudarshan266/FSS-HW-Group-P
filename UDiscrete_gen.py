@@ -17,4 +17,4 @@ if __name__ == '__main__':
         for i in range(N):
             x = random.random()
             y = klass(x)
-            fp.write(str(y)+"\n")
+            fp.write("%f %f\n"%(x,y))

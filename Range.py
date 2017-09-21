@@ -10,7 +10,7 @@ class Range(NUM):
         self.span = self.max - self.min
 
     def __str__(self):
-        return "{span = %f, lo = %f, n=%d, hi=%f}"%(self.span,self.min,int(self.n),self.max)
+        return "{\tspan = %f, lo = %f, n=%d, hi=%f\t}"%(self.span,self.min,int(self.n),self.max)
 
 if __name__ == '__main__':
     r = Range()

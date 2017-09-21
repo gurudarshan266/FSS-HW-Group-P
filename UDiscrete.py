@@ -9,7 +9,7 @@ def update(arr):
     num_arr = NUM.createNUM(arr)
     N = len(arr)
     bin_size = math.floor(math.sqrt(N))
-    epsilon = 0.1*num_arr.sd
+    epsilon = 0.2*num_arr.sd
 
     print "SD = %f"%num_arr.sd
     print  "bin size = %d"%int(bin_size)
@@ -20,15 +20,15 @@ def update(arr):
     last = -float("inf")
     last_range_max = 0.0
 
-    r.update(arr[0])
-    last = arr[0]
+    r.update(arr[N-1])
+    last = arr[N-1]
     for i in range(1,len(arr)):
-        x = arr[i]
+        x = arr[N-i-1]
 
-        if x > last and \
+        if x < last and \
                         r.span > epsilon and \
-                r.n >= bin_size and \
-                x - last_range_max > epsilon:
+                r.n > bin_size and \
+                r.max - x > epsilon and len(bins)<bin_size-1:
             # add the Range object to the bins array
             bins.append(r)
             last_range_max = r.max
@@ -57,8 +57,9 @@ if __name__ == '__main__':
     with open(in_file, "r") as fp:
         for line in fp:
             line = line.strip()
-            if isFloat(line):
-                arr.append(float(line))
+            x,y = line.split()[:2]
+            if isFloat(x):
+                arr.append(float(x))
 
     # Sort the array
     arr.sort()
