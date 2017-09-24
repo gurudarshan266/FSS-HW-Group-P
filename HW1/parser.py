@@ -1,12 +1,18 @@
 import sys
 import datetime
-from defines import *
-from Tbl import Tbl
+sys.path.append("../common")
+
+class DataType():
+    ''' Enums to identify data types '''
+    IGNORE = 0
+    NUMBER = 1
+    SYMBOL = 2
+
 
 col_names = []
 accpetance_matrix = []
 table = []
-tbl = None
+
 
 def process_data(row):
     ''' Process data '''
@@ -60,8 +66,22 @@ def remove_commented_str(line):
 
 
 def parse_first_line(line):
-    global tbl
-    tbl = Tbl(line)
+    global col_names
+    global accpetance_matrix
+
+    line_split = line.split(',')
+    col_names = [x.strip() for x in line_split]
+
+    for x in col_names:
+        if x.startswith('?'):
+            accpetance_matrix.append(DataType.IGNORE)
+        elif x.startswith('$') or x.startswith('>') or x.startswith('<'):
+            accpetance_matrix.append(DataType.NUMBER)
+        else:
+            accpetance_matrix.append(DataType.SYMBOL)
+
+            # print col_names
+            # print accpetance_matrix
 
 
 # Process line
@@ -69,18 +89,23 @@ def parse_first_line(line):
 def parse_line(line, line_num):
     global accpetance_matrix
     global col_names
-    global tbl
+
     line = line.strip()
     if line[-1] == ',':
         return False
 
-    #print "Line = %d"%line_num
+    line_split = line.split(',')
 
-    # call add row here
-    tbl.add_row(line)
+    # Print error message if the number of columns are mismatching
+    if len(line_split) != len(col_names):
+        return None
 
-
-
+        # print line
+    vals = []
+    for i in range(len(line_split)):
+        val = parse_val(line_split[i].strip())
+        vals.append(val)
+    return vals
 
 
 if __name__ == '__main__':
@@ -109,7 +134,7 @@ if __name__ == '__main__':
 
             # Do nothing if the whole line is commented
             if len(line) == 0:
-                print >> sys.stderr, "Commented line at %d" % line_num
+                print "Commented line at %d" % line_num
                 continue
 
             line = line.strip()
@@ -130,30 +155,26 @@ if __name__ == '__main__':
                     if continue_nextl:
                         continue_nextl = False
                         buff = buff + line
-                        parse_line(buff, line_num)
+                        vals_row = parse_line(buff, line_num)
                         buff = ''
 
                     else:
-                        parse_line(line, line_num)
+                        vals_row = parse_line(line, line_num)
 
+                        # Only add valid rows
+                    if vals_row is not None and is_acceptable(vals_row):
+                        table.append(vals_row)
+                        process_data(vals_row)
+                        # print "Processed line %d"% line_num
+                        print>> parsed_file, vals_row
+                        # print "Data = ",vals_row
+                    else:
+                        print >> sys.stderr, "Invalid data found on line %d" % line_num
 
         end_time = datetime.datetime.now()
 
-        #print "\n\nTime taken to parse = %s" % str(end_time - start_time)
-        #print "\nParsed data is saved in parsed.txt"
+        print "\n\nTime taken to parse = %s" % str(end_time - start_time)
+        print "\nParsed data is saved in parsed.txt"
         # print table
 
         parsed_file.close()
-
-        sorted_dscores = tbl.get_sorted_indices()
-        #print sorted_dscores
-        print "Headers"
-        print tbl.headers
-        print "Printing top 5"
-        for i in sorted_dscores[:-6:-1]:
-            print tbl.Rows[i[0]].cells
-
-        print "Printing bottom 5"
-        for i in (sorted_dscores[:5])[::-1]:
-            print tbl.Rows[i[0]].cells
-

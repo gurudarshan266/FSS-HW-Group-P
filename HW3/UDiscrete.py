@@ -1,5 +1,8 @@
 import sys
 import math
+
+sys.path.append("../common")
+
 from helpers import *
 from Range import Range
 from NUM import NUM

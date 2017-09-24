@@ -1,10 +1,12 @@
+import sys
+sys.path.append("../common")
+
 from NUM import NUM
 from SYM import SYM
 from Range import Range
 import math
 import UDiscrete
 import copy
-import sys
 
 def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
     y = y or (lambda p:p[-1])
