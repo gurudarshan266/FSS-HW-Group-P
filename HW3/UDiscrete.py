@@ -33,7 +33,8 @@ def update(arr,f=None):
         if      x > last and \
                 r.num.get_span() > epsilon and \
                 r.n > bin_size and \
-                x - r.num.max > epsilon and \
+                num_arr.n - i > bin_size and \
+                num_arr.max - x > epsilon and \
                 len(bins)<bin_size-1:
             # add the Range object to the bins array
             bins.append(r)
@@ -71,7 +72,7 @@ def UDiscretize2(t,x=None):
 # x is the function used to extract the data
 def UDiscretize(t, x=None):
     x = x or (lambda p: p[0])
-    print t
+    #print t
     # Sort the array
     t.sort(key=lambda p: x(p))
     bins = update(t,x)
