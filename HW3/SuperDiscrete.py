@@ -13,7 +13,7 @@ def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
     x = x or (lambda p:p[0])
     better = lessp and (lambda p,q:  p<q) or (lambda p,q:  p>q)
     what = nump and NUM or SYM
-    compute_spread = nump and (lambda num: num.sd)
+    compute_spread = nump and (lambda num: num.sd) or (lambda sym: sym.entropy())
     break_points = {}
     ranges = UDiscrete.UDiscretize(things,x)
     ranges = [None]+ranges
@@ -38,7 +38,9 @@ def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
         memo(high, low, lmemo)
         memo(low, high, rmemo)
 
-        cut, rbest, lbest=None,0.0,0.0
+        cut = None
+        rbest = 0.0
+        lbest = 0.0
 
         for j in range(low, high):
             l = lmemo[j]
@@ -62,7 +64,9 @@ def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
 
         return bin_
 
-    combine(1, len(ranges)-1, memo(1,len(ranges)-1,{}), 1, 0)
+    combine(1, len(ranges)-1, \
+            memo(1,len(ranges)-1,{}),\
+            1, 0)
     return break_points
 
 
