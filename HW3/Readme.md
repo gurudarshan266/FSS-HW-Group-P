@@ -10,6 +10,6 @@ The input file by default is expected to have two columns. The first column cont
 
 Executing the above script regenerates `UD_sample.txt` with a new set of samples
 
-A bash script has been provided to run the program for 20 iterations with different inputs. To run the script use:
+A bash script has been provided to run the program for 20 iterations with different input sizes ( < 10000 ). To run the script use:
 
 `./run.sh`
