@@ -13,6 +13,7 @@ class NUM:
         self.sd = 0.0
         self.n = 0
 
+
     @classmethod
     def createNUM(cls,arr):
         num = NUM()
@@ -20,7 +21,12 @@ class NUM:
             num.update(x)
         return num
 
-    def update(self, x):
+    def get_span(self):
+        return self.max-self.min
+
+    def update(self, row,f=None):
+        f = f or (lambda val:val)
+        x = f(row)
         x = float(x)
         self.arr.append(x)
         self.max = max(self.max, x)
@@ -43,10 +49,10 @@ class NUM:
 
         #self.sd = math.sqrt(variance) * 1.0
 
-    def updates(self, table, f=None):
+    def updates(self, rows, f=None):
         f = f or (lambda p:p)
-        for x in table:
-            self.update(f(x))
+        for row in rows:
+            self.update(row,f)
 
     def normalize(self, x):
         y = ((x - self.min) * 1.0) / (self.max - self.min + 1e-32)
@@ -56,7 +62,7 @@ class NUM:
 if __name__ == '__main__':
     num = NUM()
 
-    arr = [1, 2, 3, 444, 56]
+    arr = [1, 2, 444, 56]
 
     for x in arr:
         num.update(x)

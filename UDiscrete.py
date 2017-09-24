@@ -5,8 +5,10 @@ from Range import Range
 from NUM import NUM
 
 
-def update(arr):
-    num_arr = NUM.createNUM(arr)
+def update(arr,f=None):
+    f = f or (lambda x:x[0])
+    x0_arr = [f(row) for row in arr]
+    num_arr = NUM.createNUM(x0_arr)
     N = len(arr)
     bin_size = math.floor(math.sqrt(N))
     epsilon = 0.2*num_arr.sd
@@ -20,24 +22,24 @@ def update(arr):
     last = -float("inf")
     last_range_max = 0.0
 
-    r.update(arr[0])
-    last = arr[0]
+    r.update(arr[0],f)
+    last = f(arr[0])
     for i in range(1,len(arr)):
-        x = arr[i]
+        x = f(arr[i])
 
         if      x > last and \
-                r.span > epsilon and \
+                r.num.get_span() > epsilon and \
                 r.n > bin_size and \
-                x - r.max > epsilon and \
+                x - r.num.max > epsilon and \
                 len(bins)<bin_size-1:
             # add the Range object to the bins array
             bins.append(r)
-            last_range_max = r.max
+            last_range_max = r.num.max
             # Create a new Range (bin)
             r = Range()
 
         # Add the value to the range
-        r.update(x)
+        r.update(arr[i],f)
         last = x
     bins.append(r)
     return bins
@@ -45,7 +47,7 @@ def update(arr):
 
 # t is the table
 # x is the function used to extract the data
-def UDiscretize(t,x=None):
+def UDiscretize2(t,x=None):
     x = x or (lambda p: p[0])
     arr = []
     for row in t:
@@ -62,6 +64,19 @@ def UDiscretize(t,x=None):
 
     return bins
 
+# t is the table
+# x is the function used to extract the data
+def UDiscretize(t, x=None):
+    x = x or (lambda p: p[0])
+    print t
+    # Sort the array
+    t.sort(key=lambda p: x(p))
+    bins = update(t,x)
+    print "\nUnsupervised discretization:"
+    for i in range(len(bins)):
+        print "x\t%d\t%s" % (i + 1, bins[i])
+
+    return bins
 
 if __name__ == '__main__':
 
@@ -80,7 +95,7 @@ if __name__ == '__main__':
             table.append(line.split())
 
     #print bins
-    bins = UDiscretize(table)
+    bins = UDiscretize(table, lambda p: float(p[0]) )
 
 
 

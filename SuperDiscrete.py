@@ -8,7 +8,7 @@ import sys
 
 def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
     y = y or (lambda p:p[-1])
-
+    x = x or (lambda p:p[0])
     better = lessp and (lambda p,q:  p<q) or (lambda p,q:  p>q)
     what = nump and NUM or SYM
     compute_spread = nump and (lambda num: num.sd)
@@ -20,15 +20,15 @@ def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
         return ranges[j].arr
 
     def memo(here,stop, _memo, b4=None, inc=None):
-        b4 = b4 or Range()
+        b4 = b4 or NUM()
         inc = 1 if stop > here else -1
         if here != stop:
             b4 = copy.deepcopy(memo(here+inc,stop, _memo))
-        b4.updates(data(here))
+        b4.updates(data(here), y)
         _memo[here] = b4
         return _memo[here]
 
-    def combine(low, high, all, bin, lvl):
+    def combine(low, high, all, bin_, lvl):
         best = compute_spread(all)
         lmemo = {}
         rmemo = {}
@@ -49,18 +49,16 @@ def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
                 lbest = copy.deepcopy(l)
                 rbest = copy.deepcopy(r)
 
-        bin = 0
-
-        if cut != None :
-            bin = combine(low, cut, lbest, bin, lvl + 1) + 1
-            bin = combine(cut + 1, high, rbest, bin, lvl + 1)
+        if cut  :
+            bin_ = combine(low, cut, lbest, bin_, lvl + 1) + 1
+            bin_ = combine(cut + 1, high, rbest, bin_, lvl + 1)
         else:
-            if bin not in break_points:
-                break_points[bin] = -1e-32
-            if ranges[high].max > break_points[bin]:
-                break_points[bin] = ranges[high].max
+            if bin_ not in break_points:
+                break_points[bin_] = -1e-32
+            if ranges[high].num.max > break_points[bin_]:
+                break_points[bin_] = ranges[high].num.max
 
-        return bin
+        return bin_
 
     combine(1, len(ranges)-1, memo(1,len(ranges)-1,{}), 1, 0)
     return break_points
@@ -83,7 +81,7 @@ if __name__ == '__main__':
             line = line.strip()
             table.append(line.split())
 
-    breaks = SupervisedDiscrete(table,(lambda p:p[0]),(lambda p:p[1]))
+    breaks = SupervisedDiscrete(table, lambda p:float(p[0]) , lambda p:float(p[-1] ) )
     print "\nSupervised Discretizer:"
     for k in breaks:
         print "super\t%s\t{ label = %s, most = %f}"%(str(k),str(k),breaks[k])
