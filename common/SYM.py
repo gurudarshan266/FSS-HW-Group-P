@@ -6,8 +6,9 @@ class SYM:
         self.counter = {}
         self.n = 0
 
-    def update(self, s):
-        s = str(s)
+    def update(self, s,f=None):
+        f = f or (lambda s:str(s))
+        s = str(f(s))
         if s not in self.counter:
             self.counter[s] = 0
         self.counter[s] = self.counter[s] + 1
@@ -25,6 +26,12 @@ class SYM:
 
     def distance(x,y):
         return 0 if x==y else 1
+
+    def updates(self,rows,f):
+        for row in rows:
+            s = str(f(row))
+            self.update(s,f)
+
 
 
 if __name__ == '__main__':
