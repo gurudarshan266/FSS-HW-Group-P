@@ -91,7 +91,7 @@ if __name__ == '__main__':
             table.append(line.split())
 
     is_sym_data = len(sys.argv) >=3 and (sys.argv[2]=='SYM' or sys.argv[2]=='Sym' or sys.argv[2]=='sym')
-    breaks = SupervisedDiscrete(table, lambda p:float(p[0]) , lambda p:float(p[-1] ), not is_sym_data)
+    breaks = SupervisedDiscrete(table, lambda p:float(p[0]) , lambda p:(p[-1] ),  not is_sym_data)
     
     print "\nSupervised Discretizer:"
     for k in breaks:
