@@ -22,7 +22,7 @@ def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
         return ranges[j].arr
 
     def memo(here,stop, _memo, b4=None, inc=None):
-        b4 = NUM()
+        b4 = what()
         inc = 1 if stop > here else -1
         if here != stop:
             b4 = copy.deepcopy(memo(here+inc,stop, _memo))
@@ -90,7 +90,9 @@ if __name__ == '__main__':
             line = line.strip()
             table.append(line.split())
 
-    breaks = SupervisedDiscrete(table, lambda p:float(p[0]) , lambda p:float(p[-1] ) )
+    is_sym_data = len(sys.argv) >=3 and (sys.argv[2]=='SYM' or sys.argv[2]=='Sym' or sys.argv[2]=='sym')
+    breaks = SupervisedDiscrete(table, lambda p:float(p[0]) , lambda p:float(p[-1] ), not is_sym_data)
+    
     print "\nSupervised Discretizer:"
     for k in breaks:
         print "super\t%s\t{ label = %s, most = %f}"%(str(k),str(k),breaks[k])
