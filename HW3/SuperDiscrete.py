@@ -12,7 +12,7 @@ def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
     y = y or (lambda p:p[-1])
     x = x or (lambda p:p[0])
     better = lessp and (lambda p,q:  p<q) or (lambda p,q:  p>q)
-    #what = nump and NUM or SYM
+    what = nump and NUM or SYM
     compute_spread = nump and (lambda num: num.sd) or (lambda sym: sym.entropy())
     break_points = {}
     ranges = UDiscrete.UDiscretize(things,x)
@@ -53,7 +53,7 @@ def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
                 lbest = copy.deepcopy(l)
                 rbest = copy.deepcopy(r)
 
-        if cut  :
+        if cut:
             bin_ = combine(low, cut, lbest, bin_, lvl + 1) + 1
             bin_ = combine(cut + 1, high, rbest, bin_, lvl + 1)
         else:

@@ -35,7 +35,7 @@ def update(arr,f=None):
                 r.n > bin_size and \
                 num_arr.n - i > bin_size and \
                 num_arr.max - x > epsilon and \
-                len(bins)<bin_size-1:
+                len(bins)<bin_size:
             # add the Range object to the bins array
             bins.append(r)
             last_range_max = r.num.max
