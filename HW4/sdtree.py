@@ -68,7 +68,7 @@ def grow1(above,yfun,rows,lvl,b4,pos = None,attr = None,val = None):
                         grow1(here,yfun,rows1,lvl+1,here["stats"].sd,cut["pos"],cut["what"],val)
 
 def grow(t,y):
-    yfun = tbl[y](t)
+    yfun = t.dom # hardcoded to dom
     root = create(t, yfun)
     grow1(root,yfun,t.Rows, 0, 1e32)
     return root

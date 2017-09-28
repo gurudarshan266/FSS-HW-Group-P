@@ -13,7 +13,10 @@ class NUM:
         self.sd = 0.0
         self.n = 0
         self.pos = pos
-        self.bins = []
+        self.bins = None
+
+    def __str__(self):
+        return "POS = %d"%self.pos
 
 
     @classmethod

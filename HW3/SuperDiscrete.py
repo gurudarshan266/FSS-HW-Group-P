@@ -8,6 +8,13 @@ import math
 import UDiscrete
 import copy
 
+def labels(nums):
+    out = []
+    for i in range(1,len(nums)+1):
+        d = {"most":nums[i], "label":i-1}
+        out.append(d)
+    return out
+
 def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
     y = y or (lambda p:p[-1])
     x = x or (lambda p:p[0])
@@ -70,7 +77,7 @@ def SupervisedDiscrete(things,x=None,y=None,nump=True,lessp=True):
     if len(break_points) < len(ranges)-1:
         print "\n\nFewer ranges by Supervised Discretizer\n\n"
 
-    return break_points
+    return labels(break_points)
 
 
 
@@ -94,8 +101,8 @@ if __name__ == '__main__':
     breaks = SupervisedDiscrete(table, lambda p:float(p[0]) , lambda p:(p[-1] ),  not is_sym_data)
     
     print "\nSupervised Discretizer:"
-    for k in breaks:
-        print "super\t%s\t{ label = %s, most = %f}"%(str(k),str(k),breaks[k])
+    for k in range(len(breaks)):
+        print "super\t%s\t{ label = %s, most = %f}"%(str(k),breaks[k]["label"],breaks[k]["most"])
 
 
 

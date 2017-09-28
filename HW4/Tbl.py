@@ -39,7 +39,7 @@ class Tbl:
         self.less = []
         self.more = []
         self.goals = []
-        self.dom_scores = []
+        self.dom_scores = {}
 
         for i in range(len(self.headers)):
             x = self.headers[i]
@@ -49,6 +49,7 @@ class Tbl:
                 self.weights.append(0)
                 self.containers.append(None)
                 # TODO: check if it has to added to self.all["cols"]
+                self.all["cols"].append(None)
 
 
             elif x.startswith('$') or x.startswith('%'):
@@ -224,7 +225,15 @@ class Tbl:
             self.dom_scores[r.id] = self.dominate_score(r.id)
         return self.dom_scores[r.id]
 
-    def discretizeRows(self, y):
+    def  data(self, cells, old):
+        new = Row(cells, self.goals_index, self.weights)
+        self.Rows.append(new)
+        if old:
+            new.id = old.id
+        return new
+
+
+    def discretizeRows(self, y=None):
         j = Tbl(self.orig_header_str)
         j.discretizeHeaders()
 

@@ -7,6 +7,9 @@ class SYM:
         self.n = 0
         self.pos = pos
 
+    def __str__(self):
+        return "POS = %d"%self.pos
+
     def update(self, s,f=None):
         f = f or (lambda s:str(s))
         s = str(f(s))
@@ -32,6 +35,17 @@ class SYM:
         for row in rows:
             s = str(f(row))
             self.update(s,f)
+
+    @classmethod
+    def discretize(cls, i, x):
+        r = None
+        if not i.bins: return x
+        for b in i.bins:
+            r = b["label"]
+            if x <= b["most"]:
+                break
+        return r
+
 
 
 
