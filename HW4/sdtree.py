@@ -28,12 +28,12 @@ def order (t,y):
         col = {"pos":head.pos, "what":head.txt, "nums":{}, "n":0}
         for row in (t.Rows): # t.rows = list of all the rows in the table
             x = row.cells[col["pos"]]
-            if isFloat(x):
+            if isFloat(x) or type(x) == str:
                 col["n"] = col["n"] + 1
 
                 if x not in col["nums"]:
-                    col["nums"][x] = NUM()
-                col["nums"][x].update(y(row))
+                    col["nums"][x] = NUM(pos=col["pos"],txt=col["what"])
+                col["nums"][x].update(float(y(row)))
         return {"key":xpect(col),"val":col}
 
     out = []
@@ -57,16 +57,20 @@ def grow1(above,yfun,rows,lvl,b4,pos = None,attr = None,val = None):
                     above["_kids"].append(here)
                 cuts = order(here["_t"], yfun)
                 cut = cuts[0]
-                kids = []
+                kids = {}
                 for r in rows:
                     val = r.cells[cut["pos"]]
-                    if isFloat(val):
-                        rows1 = kids[val] or []
+                    if isFloat(val) or type(val)==str:
+                        rows1 = []
+                        if val in kids:
+                            rows1 = kids[val]
                         rows1.append(r)
                         kids[val] = rows1
-                for val,rows1 in enumerate(kids):
+                for val in kids:
+                    rows1=kids[val]
                     if len(rows1) < len(rows):
                         grow1(here,yfun,rows1,lvl+1,here["stats"].sd,cut["pos"],cut["what"],val)
+                        print "Growing at level %d"%lvl
 
 def grow(t,y):
     yfun = t.dom # hardcoded to dom
@@ -79,13 +83,13 @@ def tprint(tr, lvl=0):
     def left(x): return "%-20s"%x
     lvl = lvl or 0
     suffix=""
-    if len(tr["kids"])==0 or lvl ==0:
-        suffix = "n=%s mu=%-.2f sd=%-.2f"%(tr["stats"].n, tr["stats"].mu, tr["stats"].sd)
+    if len(tr["_kids"])==0 or lvl ==0:
+        suffix = "n=%s mu=%-.2f sd=%-.2f"%(tr["stats"].n, tr["stats"].mean, tr["stats"].sd)
 
     if lvl == 0:
         print "\n"+suffix
     else:
-        print left(pad()) + tr["attr"] or "" + tr["val"] or "" + "\t:" + suffix
+        print left(pad() + (str(tr["attr"]) or "") +" = "+ (str(tr["val"]) or "")) + "\t:" + suffix
     for j in range(len(tr["_kids"])):
         tprint( (tr["_kids"])[j], lvl +1)
 

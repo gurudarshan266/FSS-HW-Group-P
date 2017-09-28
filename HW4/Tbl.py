@@ -167,7 +167,7 @@ class Tbl:
             if self.datatype_matrix[i]&0x3 != DataType.IGNORE:
                 self.containers[i].update(vals[i])
 
-        r = Row(vals,self.goals_index,self.weights, len(self.Rows))
+        r = Row(vals,self.goals_index,self.weights, id =len(self.Rows))
         self.Rows.append(r)
         return r
 
