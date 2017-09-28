@@ -195,7 +195,8 @@ class Tbl:
 
     def dominate_score(self,i):
         count = 0
-        for j in range(len(self.Rows)):
+        for r in range(len(self.Rows)):
+            j = self.Rows[r].id
             if i != j:
                 if self.dominate1(i,j):
                     count = count + 1
@@ -244,9 +245,10 @@ class Tbl:
         yfunc = self.funs["dom"]
 
         for head in (self.x["nums"]):
+            rows = copy.deepcopy(self.Rows)
             cooked = (j.all["cols"])[head.pos]
             x = lambda r: r.cells[cooked.pos]
-            cooked.bins = SupervisedDiscrete(self.Rows,x,yfunc)
+            cooked.bins = SupervisedDiscrete(rows,x,yfunc)
         for r in (self.Rows):
             tmp = copy.deepcopy(r.cells)
             for head in self.x["nums"]:
@@ -256,5 +258,13 @@ class Tbl:
                 tmp[cooked.pos] = new
             j.data(tmp,r)
         return j
+
+    def write_to_file(self,fname="t2.csv", dom_scores=None):
+        with open(fname,"w+") as f:
+            dom_scores = dom_scores or self.compute_domination_scores()
+            f.write("\n%s,%s,%s"%("id",lst_join(self.headers),"dom_score"))
+            for i in range(len(self.Rows)):
+                r = self.Rows[i]
+                f.write("\n%d,%s,%d" % (r.id,lst_join(r.cells),dom_scores[i]))
 
 

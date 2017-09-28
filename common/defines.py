@@ -6,3 +6,5 @@ class DataType():
     MIN_GOAL = 4
     MAX_GOAL = 8
 
+def lst_join(arr):
+    return ",".join([str(x) for x in arr])

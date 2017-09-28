@@ -59,10 +59,10 @@ def grow1(above,yfun,rows,lvl,b4,pos = None,attr = None,val = None):
                 cut = cuts[0]
                 kids = {}
                 for r in rows:
-                    val = r.cells[cut["pos"]]
+                    val = r.cells[cut["pos"]] # Get the element corresponding to min column
                     if isFloat(val) or type(val)==str:
                         rows1 = []
-                        if val in kids:
+                        if val in kids: # group it
                             rows1 = kids[val]
                         rows1.append(r)
                         kids[val] = rows1
@@ -73,7 +73,7 @@ def grow1(above,yfun,rows,lvl,b4,pos = None,attr = None,val = None):
                         #print "Growing at level %d"%lvl
 
 def grow(t,y):
-    yfun = t.dom # hardcoded to dom
+    yfun = y#t.dom # hardcoded to dom
     root = create(t, yfun)
     grow1(root,yfun,t.Rows, 0, 1e32)
     return root
