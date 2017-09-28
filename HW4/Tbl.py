@@ -1,14 +1,16 @@
 import sys
 sys.path.append("../common")
+sys.path.append("../HW3")
 
 import math
 import operator
+import copy
 
 from defines import *
 from row import Row
 from NUM import NUM
 from SYM import SYM
-
+from SuperDiscrete import SupervisedDiscrete
 
 def isfloat(val):
     try:
@@ -24,6 +26,8 @@ class Tbl:
         line_split = header_str.split(',')
         self.headers = [x.strip() for x in line_split]
 
+        self.funs={"dom":self.dom}
+
         self.datatype_matrix = []
         self.weights = []
         self.goals_index = []
@@ -35,6 +39,7 @@ class Tbl:
         self.less = []
         self.more = []
         self.goals = []
+        self.dom_scores = []
 
         for i in range(len(self.headers)):
             x = self.headers[i]
@@ -50,7 +55,7 @@ class Tbl:
                 self.datatype_matrix.append(DataType.NUMBER)
                 self.weights.append(1)
                 # add to respective groups
-                cont = NUM()
+                cont = NUM(pos=i)
                 self.containers.append(cont)
                 self.all["cols"].append(cont)
                 self.x["cols"].append(cont)
@@ -63,7 +68,7 @@ class Tbl:
                 self.weights.append(-1)
                 self.goals_index.append(i)
                 # add to respective groups
-                cont = NUM()
+                cont = NUM(pos=i)
                 self.containers.append(NUM())
                 self.all["cols"].append(cont)
                 self.y["cols"].append(cont)
@@ -78,7 +83,7 @@ class Tbl:
                 self.weights.append(1)
                 self.goals_index.append(i)
                 # add to respective groups
-                cont = NUM()
+                cont = NUM(pos=i)
                 self.containers.append(NUM())
                 self.all["cols"].append(cont)
                 self.y["cols"].append(cont)
@@ -92,7 +97,7 @@ class Tbl:
                 self.datatype_matrix.append(DataType.SYMBOL)
                 self.weights.append(1)
                 # add to respective groups
-                cont = SYM()
+                cont = SYM(pos=i)
                 self.containers.append(cont)
                 self.all["cols"].append(cont)
                 self.y["syms"].append(cont)
@@ -104,7 +109,7 @@ class Tbl:
                 self.datatype_matrix.append(DataType.SYMBOL)
                 self.weights.append(1)
                 # add to respective groups
-                cont = SYM()
+                cont = SYM(pos=i)
                 self.containers.append(cont)
                 self.all["cols"].append(cont)
                 self.x["cols"].append(cont)
@@ -162,7 +167,7 @@ class Tbl:
             vals = line.cells
 
 
-        r = Row(vals,self.goals_index,self.weights)
+        r = Row(vals,self.goals_index,self.weights, len(self.Rows))
         self.Rows.append(r)
 
 
@@ -208,6 +213,36 @@ class Tbl:
 
         for r in frm:
             j.add_row(r)
+        return j
+
+
+    def discretizeHeaders(self):
+        return [ (s.replace("$","")).replace("%","") for s in self.headers]
+
+    def dom(self, r):
+        if r.id not in self.dom_scores:
+            self.dom_scores[r.id] = self.dominate_score(r.id)
+        return self.dom_scores[r.id]
+
+    def discretizeRows(self, y):
+        j = Tbl(self.orig_header_str)
+        j.discretizeHeaders()
+
+        #TODO: Hardcoded to return dom score for HW4, add new functions
+        yfunc = self.funs["dom"]
+
+        for head in (self.x["nums"]):
+            cooked = (j.all["cols"])[head.pos]
+            x = lambda r: r.cells[cooked.pos]
+            cooked.bins = SupervisedDiscrete(self.Rows,x,yfunc)
+        for r in (self.Rows):
+            tmp = copy.deepcopy(r.cells)
+            for head in self.x["nums"]:
+                cooked = (j.all["cols"])[head.pos]
+                old = tmp[cooked.pos]
+                new = SYM.discretize(cooked,old) # TO be changed
+                tmp[cooked.pos] = new
+            j.data(tmp,r)
         return j
 
 

@@ -2,9 +2,10 @@ import math
 
 
 class SYM:
-    def __init__(self):
+    def __init__(self, pos = 0):
         self.counter = {}
         self.n = 0
+        self.pos = pos
 
     def update(self, s,f=None):
         f = f or (lambda s:str(s))

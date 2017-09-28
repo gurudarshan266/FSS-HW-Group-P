@@ -12,7 +12,7 @@ tree_max_depth = 100
 
 def create(t, yfun, pos, attr, val):
     s = NUM()
-    s.updates(t,yfun)
+    s.updates(t.Rows,yfun)
     return { "_t" :t, "_kids" : [], "yfun": yfun, "pos":pos, "attr":attr,"val":val, "stats" : s}
 
 def order (t,y):
