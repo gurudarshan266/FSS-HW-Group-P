@@ -21,11 +21,11 @@ def order (t,y):
         tmp = 0
         for k in col["nums"]:
             x=col["nums"][k]
-            tmp = tmp + (x.sd*x.n*1.0)/len(col) #recheck the order of multiply and divide
+            tmp = tmp + (x.sd*x.n*1.0)/col["n"] #recheck the order of multiply and divide
         return tmp
 
     def whatif(head,y):
-        col = {"pos":head.pos, "what":head.txt, "nums":{}, "n":0}
+        col = {"pos":head.pos, "what":head.txt, "nums":{}, "n":0.0}
         for row in (t.Rows): # t.rows = list of all the rows in the table
             x = row.cells[col["pos"]]
             if isFloat(x) or type(x) == str:
@@ -70,7 +70,7 @@ def grow1(above,yfun,rows,lvl,b4,pos = None,attr = None,val = None):
                     rows1=kids[val]
                     if len(rows1) < len(rows):
                         grow1(here,yfun,rows1,lvl+1,here["stats"].sd,cut["pos"],cut["what"],val)
-                        print "Growing at level %d"%lvl
+                        #print "Growing at level %d"%lvl
 
 def grow(t,y):
     yfun = t.dom # hardcoded to dom

@@ -158,16 +158,19 @@ class Tbl:
 
             if not self.is_acceptable_row(vals):
                 return
+            r_id = len(self.Rows)
 
         else:
             vals = line.cells
+            #r_id = len(self.Rows)
+            r_id =line.id
 
         # Update the containers
         for i in range(len(vals)):
             if self.datatype_matrix[i]&0x3 != DataType.IGNORE:
                 self.containers[i].update(vals[i])
 
-        r = Row(vals,self.goals_index,self.weights, id =len(self.Rows))
+        r = Row(vals,self.goals_index,self.weights, id =r_id)
         self.Rows.append(r)
         return r
 
