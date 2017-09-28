@@ -242,7 +242,7 @@ class Tbl:
         j = Tbl(disc_headers_str)
 
         #TODO: Hardcoded to return dom score for HW4, add new functions
-        yfunc = self.funs["dom"]
+        yfunc = y or self.funs["dom"]
 
         for head in (self.x["nums"]):
             rows = copy.deepcopy(self.Rows)

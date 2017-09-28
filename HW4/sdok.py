@@ -149,7 +149,7 @@ if __name__ == '__main__':
         parsed_file.close()
 
         sorted_dscores = tbl.get_sorted_indices()
-        print sorted_dscores
+        #print sorted_dscores
         print "Headers"
         print tbl.headers
         print "Printing top 5"
@@ -161,7 +161,7 @@ if __name__ == '__main__':
             print tbl.Rows[i[0]].cells
 
 
-        t2 = tbl.discretizeRows()
+        t2 = tbl.discretizeRows(tbl.dom)
         t2.write_to_file(dom_scores=tbl.compute_domination_scores())
         print "\n\n\nSupervised Dom based table created..."
 
@@ -169,7 +169,7 @@ if __name__ == '__main__':
             if head.bins:
                 print str(len(head.bins)) +" "+ head.txt
 
-        tr = tree.grow(t2,tbl.dom)
+        tr = tree.grow(t2,y=tbl.dom)
         tree.tprint(tr)
 
         # dom_tbl = tbl.compute_domination_scores()

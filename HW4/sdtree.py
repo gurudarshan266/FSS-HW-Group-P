@@ -39,7 +39,8 @@ def order (t,y):
     out = []
 
     for h in t.x["cols"]:
-        out.append(whatif(h,y))
+        if h.txt != "origin":
+            out.append(whatif(h,y))
     out.sort(key=lambda x: x["key"])
 
     return [ x["val"] for x in out]
@@ -89,7 +90,7 @@ def tprint(tr, lvl=0):
     if lvl == 0:
         print "\n"+suffix
     else:
-        print left(pad() + (str(tr["attr"]) or "") +" = "+ (str(tr["val"]) or "")) + "\t:" + suffix
+        print left(pad() + (str(tr["attr"]) or "") +" = "+ (str(tr["val"]) or "")) + "\t\t\t:" + suffix
     for j in range(len(tr["_kids"])):
         tprint( (tr["_kids"])[j], lvl +1)
 
