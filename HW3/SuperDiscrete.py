@@ -11,7 +11,7 @@ import copy
 def labels(nums):
     out = []
     for i in range(1,len(nums)+1):
-        d = {"most":nums[i], "label":i-1}
+        d = {"most":nums[i], "label":"L%d"%i}
         out.append(d)
     return out
 

@@ -4,6 +4,7 @@ sys.path.append("../common")
 import datetime
 from defines import *
 from Tbl import Tbl
+import sdtree as tree
 
 col_names = []
 accpetance_matrix = []
@@ -160,5 +161,16 @@ if __name__ == '__main__':
             print tbl.Rows[i[0]].cells
 
 
-        j = tbl.discretizeRows()
-        print "end"
+        t2 = tbl.discretizeRows()
+        print "\n\n\nSupervised Dom based table created..."
+
+        for head in t2.x["cols"]:
+            if head.bins:
+                print str(len(head.bins)) +" "+ head.txt
+
+        tr = tree.grow(t2,"dom")
+        tree.tprint(tr)
+
+
+
+

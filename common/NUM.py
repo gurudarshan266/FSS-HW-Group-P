@@ -4,7 +4,7 @@ import math
 class NUM:
     'Used for NUMS manipulation'
 
-    def __init__(self,pos=0):
+    def __init__(self,pos=0,txt=""):
         self.min = float('inf')
         self.max = -float('inf')
         self.arr = []
@@ -14,9 +14,10 @@ class NUM:
         self.n = 0
         self.pos = pos
         self.bins = None
+        self.txt = txt
 
     def __str__(self):
-        return "POS = %d"%self.pos
+        return "%s POS = %d"%(self.txt, self.pos)
 
 
     @classmethod

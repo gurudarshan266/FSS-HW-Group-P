@@ -8,9 +8,9 @@ from Tbl import Tbl
 import copy
 
 tree_min = 2 #TODO: reverify the values
-tree_max_depth = 100
+tree_max_depth = 10
 
-def create(t, yfun, pos, attr, val):
+def create(t, yfun, pos=None, attr=None, val=None):
     s = NUM()
     s.updates(t.Rows,yfun)
     return { "_t" :t, "_kids" : [], "yfun": yfun, "pos":pos, "attr":attr,"val":val, "stats" : s}
@@ -19,7 +19,8 @@ def order (t,y):
     # col = list of nums for the rows
     def xpect(col):
         tmp = 0
-        for x in col.nums:
+        for k in col["nums"]:
+            x=col["nums"][k]
             tmp = tmp + (x.sd*x.n*1.0)/len(col) #recheck the order of multiply and divide
         return tmp
 
@@ -73,7 +74,7 @@ def grow(t,y):
     grow1(root,yfun,t.Rows, 0, 1e32)
     return root
 
-def tprint(tr, lvl=None):
+def tprint(tr, lvl=0):
     def pad(): return '| '*(lvl-1)
     def left(x): return "%-20s"%x
     lvl = lvl or 0

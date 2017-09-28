@@ -2,13 +2,15 @@ import math
 
 
 class SYM:
-    def __init__(self, pos = 0):
+    def __init__(self, pos = 0,txt = ""):
         self.counter = {}
         self.n = 0
         self.pos = pos
+        self.txt = txt
+        self.bins = None
 
     def __str__(self):
-        return "POS = %d"%self.pos
+        return "%s POS = %d"%(self.txt, self.pos)
 
     def update(self, s,f=None):
         f = f or (lambda s:str(s))
@@ -44,7 +46,7 @@ class SYM:
             r = b["label"]
             if x <= b["most"]:
                 break
-        return r
+        return str(r)
 
 
 

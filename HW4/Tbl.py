@@ -56,7 +56,7 @@ class Tbl:
                 self.datatype_matrix.append(DataType.NUMBER)
                 self.weights.append(1)
                 # add to respective groups
-                cont = NUM(pos=i)
+                cont = NUM(pos=i,txt=x)
                 self.containers.append(cont)
                 self.all["cols"].append(cont)
                 self.x["cols"].append(cont)
@@ -69,7 +69,7 @@ class Tbl:
                 self.weights.append(-1)
                 self.goals_index.append(i)
                 # add to respective groups
-                cont = NUM(pos=i)
+                cont = NUM(pos=i,txt=x)
                 self.containers.append(NUM())
                 self.all["cols"].append(cont)
                 self.y["cols"].append(cont)
@@ -84,7 +84,7 @@ class Tbl:
                 self.weights.append(1)
                 self.goals_index.append(i)
                 # add to respective groups
-                cont = NUM(pos=i)
+                cont = NUM(pos=i,txt=x)
                 self.containers.append(NUM())
                 self.all["cols"].append(cont)
                 self.y["cols"].append(cont)
@@ -98,7 +98,7 @@ class Tbl:
                 self.datatype_matrix.append(DataType.SYMBOL)
                 self.weights.append(1)
                 # add to respective groups
-                cont = SYM(pos=i)
+                cont = SYM(pos=i,txt=x)
                 self.containers.append(cont)
                 self.all["cols"].append(cont)
                 self.y["syms"].append(cont)
@@ -110,7 +110,7 @@ class Tbl:
                 self.datatype_matrix.append(DataType.SYMBOL)
                 self.weights.append(1)
                 # add to respective groups
-                cont = SYM(pos=i)
+                cont = SYM(pos=i,txt=x)
                 self.containers.append(cont)
                 self.all["cols"].append(cont)
                 self.x["cols"].append(cont)
@@ -159,17 +159,17 @@ class Tbl:
             if not self.is_acceptable_row(vals):
                 return
 
-            # Update the containers
-            for i in range(len(vals)):
-                if self.datatype_matrix[i]&0x3 != DataType.IGNORE:
-                    self.containers[i].update(vals[i])
-
         else:
             vals = line.cells
 
+        # Update the containers
+        for i in range(len(vals)):
+            if self.datatype_matrix[i]&0x3 != DataType.IGNORE:
+                self.containers[i].update(vals[i])
 
         r = Row(vals,self.goals_index,self.weights, len(self.Rows))
         self.Rows.append(r)
+        return r
 
 
     def dominate1(self,i,j):
@@ -226,16 +226,16 @@ class Tbl:
         return self.dom_scores[r.id]
 
     def  data(self, cells, old):
-        new = Row(cells, self.goals_index, self.weights)
-        self.Rows.append(new)
+        new = self.add_row(",".join([str(x) for x in cells]))#Row(cells, self.goals_index, self.weights)
         if old:
             new.id = old.id
         return new
 
 
     def discretizeRows(self, y=None):
-        j = Tbl(self.orig_header_str)
-        j.discretizeHeaders()
+        disc_headers = self.discretizeHeaders()
+        disc_headers_str = ",".join(disc_headers)
+        j = Tbl(disc_headers_str)
 
         #TODO: Hardcoded to return dom score for HW4, add new functions
         yfunc = self.funs["dom"]
@@ -249,7 +249,7 @@ class Tbl:
             for head in self.x["nums"]:
                 cooked = (j.all["cols"])[head.pos]
                 old = tmp[cooked.pos]
-                new = SYM.discretize(cooked,old) # TO be changed
+                new = SYM.discretize(cooked,old)
                 tmp[cooked.pos] = new
             j.data(tmp,r)
         return j
