@@ -38,15 +38,15 @@ class SYM:
             s = str(f(row))
             self.update(s,f)
 
-    @classmethod
-    def discretize(cls, i, x):
+    @staticmethod
+    def discretize(i, x):
         r = None
         if not i.bins: return x
         for b in i.bins:
             r = b["label"]
-            if x <= b["most"]:
+            if x < b["most"]:
                 break
-        return str(r)
+        return str(int(r))
 
 
 

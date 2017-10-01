@@ -249,6 +249,7 @@ class Tbl:
             cooked = (j.all["cols"])[head.pos]
             x = lambda r: r.cells[cooked.pos]
             cooked.bins = SupervisedDiscrete(rows,x,yfunc)
+            pass
         for r in (self.Rows):
             tmp = copy.deepcopy(r.cells)
             for head in self.x["nums"]:
