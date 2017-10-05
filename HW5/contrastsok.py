@@ -177,7 +177,7 @@ if __name__ == '__main__':
 
         b = CON.branches(tr)
         print "\n==================== Show branches \n\n"
-        print b
+        CON.maprint(b)
         print("\n==================== What to do: (plans= here to better) ")
         CON.plans(b)
         print("\n==================== What to fear: (monitors = here to worse) ")
