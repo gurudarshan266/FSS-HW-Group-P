@@ -72,11 +72,11 @@ class NUM:
 
     @classmethod
     def hedges(cls,i,j):
-        nom = (i.n-1)*(i.sd**2)*1.0 + (j.n - 1)*(j.sd**2)*1.0
-        denom = (i.n - 1)*1.0 + (j.n - 1)
-        sp = (nom/denom)**0.5
+        nom = (i.n-1.0)*(i.sd**2) + (j.n - 1.0)*(j.sd**2)*1.0
+        denom = (i.n - 1.0) + (j.n - 1.0)
+        sp = 0.0 + (nom/denom)**0.5
         g = abs(i.mean-j.mean)/sp
-        c = 1.0-3.0/(4*(i.n + j.n - 2.0) - 1)
+        c = 1.0-3.0/(4.0*(i.n + j.n - 2.0) - 1)
         return g*c > num_small
 
     @classmethod
@@ -89,7 +89,7 @@ class NUM:
             n1 = first
             while n1 < last:
                 n2 = n1*2.0
-                if df >= n1 and df >=n2:
+                if df >= n1 and df <= n2:
                     old,new = crit[n1], crit[n2]
                     return 0.0 + old + (new-old)*(df-n1+0.0)/(n2-n1+0.0)
                 n1 = n1*2
@@ -99,7 +99,7 @@ class NUM:
         t = (i.mean - j.mean + 0.0)/math.sqrt(max(1e-64, (i.sd**2 + 0.0)/i.n + (j.sd**2 + 0.0)/j.n ))
         a= (1.0*i.sd**2)/i.n
         b= (1.0*j.sd*2)/j.n
-        df = (a+b+0.0)**2/(1e-64 + a**2/(i.n -1.0) + b**2/(j.n - 1))
+        df = (a+b+0.0)**2/(1e-64 + a**2/(i.n -1.0) + b**2/(j.n - 1.0))
         c= NUM.ttest1(math.floor(df+0.5), num_first, num_last, num_criticals[num_conf])
         return abs(t) > c
 
