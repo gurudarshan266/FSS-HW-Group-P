@@ -2,6 +2,7 @@ import sys
 sys.path.append("../common")
 
 import copy
+import random
 from NUM import NUM
 
 def has(branch):
@@ -61,8 +62,11 @@ def contrasts(branches, better):
                 num1 = branch1[-2]["_stats"]
                 num2 = branch2[-2]["_stats"]
                 if better(num2.mean,num1.mean):
-                    if not NUM.same(num1, num2): # to be implemented
+                    if not NUM.same(num1, num2):
                         inc = delta(branch2[-1],branch1[-1])
+                        #print "Not same ---------------------------------------"
+                    else:
+                        print "Same -------------------------"
 
                         if len(inc) > 0:
                             out.append({"i":i,"j":j, "ninc":len(inc), "muinc":num2.mean - num1.mean, "inc":inc, "branch1":branch1[-1], "mu1":num1.mean, "branch2":branch2[-1], "mu2":num2.mean})
@@ -95,3 +99,36 @@ def maprint(t, first=None, last=None):
         print "..."
         for j in range(len(t)-1,len(t)-1,-1):
             print "%d %s"%(j,t[j])
+
+
+def accumulateLeaves(tr, leaves, path):
+    if 'attr' in tr and tr['attr']:
+        tr['path'] = path + " "+tr['attr']+"="+str(tr['val'])
+    else:
+        tr['path'] = ' '
+
+    # Is leaf
+    if len(tr["_kids"]) == 0:
+        leaves.append(tr)
+        return
+
+    path2 = tr['path']
+    for k in tr["_kids"]:
+        accumulateLeaves(k,leaves,path2)
+
+def createContrasts(leaves):
+    random.shuffle(leaves)
+    counter = 1
+    for i in range(len(leaves)):
+        x = leaves[i]
+        for j in range(i+1,len(leaves)):
+            y = leaves[j]
+            print "%4d.  "%(counter),
+            counter = counter+1
+            if NUM.same(x['stats'], y['stats']):
+                print "(%s  )\t\t\t is same as\t\t\t (%s  )" % (x['path'], y['path'])
+            elif more(x['stats'].mean, y['stats'].mean):
+                print "(%s  )\t\t\t is plan for\t\t\t (%s  )"%(x['path'],y['path'])
+            else:
+                print "(%s  )\t\t\t is monitor for\t\t\t (%s  )" % (x['path'], y['path'])
+

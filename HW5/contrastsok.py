@@ -175,13 +175,18 @@ if __name__ == '__main__':
         tr = tree.grow(t2,y=tbl.dom)
         tree.tprint(tr)
 
-        b = CON.branches(tr)
-        print "\n==================== Show branches \n\n"
-        CON.maprint(b)
-        print("\n==================== What to do: (plans= here to better) ")
-        CON.plans(b)
-        print("\n==================== What to fear: (monitors = here to worse) ")
-        CON.monitors(b)
+        leaves = []
+        CON.accumulateLeaves(tr,leaves, "")
+        print "\n\nShowing Plans and Monitors:"
+        CON.createContrasts(leaves)
+
+        # b = CON.branches(tr)
+        # print "\n==================== Show branches \n\n"
+        # CON.maprint(b)
+        # print("\n==================== What to do: (plans= here to better) ")
+        # CON.plans(b)
+        # print("\n==================== What to fear: (monitors = here to worse) ")
+        # CON.monitors(b)
 
 
 
