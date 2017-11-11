@@ -19,7 +19,7 @@ class DiffentialEvolutionTuner:
     def __init__(self, learner, param_grid = None,
                   X_train= None, Y_train = None,
                   X_tune=None, Y_tune=None,
-                  cv=None, np = 50, f = 0.75, cr = 0.3, life = 10, goal = "f1"):
+                  cv=None, np = 50, f = 0.75, cr = 0.3, life = 10, goal = "accuracy"):
 
         random.seed(int(time.time()*100))
 
@@ -55,6 +55,9 @@ class DiffentialEvolutionTuner:
 
         self.param_grid = param_grid
 
+        # Compute bounds for all the numeric variable
+        self.compute_bounds(self.param_grid)
+
     def validate_param_grid(self,param_grid):
         "Checks for any unsupported params"
         model_params = self.learner.get_params().keys()
@@ -63,17 +66,36 @@ class DiffentialEvolutionTuner:
                 return False
         return True
 
+    def compute_bounds(self, param_grid):
+        model_params = self.learner.get_params().keys()
+        self.bounds = {}
+        for k in param_grid:
+            # Only applicable for numeric fields
+            if type(param_grid[k][0]) is float or type(param_grid[k][0]) is int:
+                self.bounds[k] = {'max': max(param_grid[k]), 'min': min(param_grid[k])}
+
+
+    def trim(self, param, val):
+        "Trim the value to the bounds of the grid"
+        if param in self.bounds:
+            val = max(val,self.bounds[param]['min'])
+            val = min(val,self.bounds[param]['max'])
+        return val
+
+
     def generate_population(self, np):
         '''Generate the initial population'''
 
         population = []
         for i in range(np):
             member = {}
+            random.seed(random.randint(1,1000))
             # Create a member by randomly picking up param values from the grid
             for param in self.param_grid:
                 member[param] = random.choice(self.param_grid[param])
             population.append(member)
         return population
+
 
     def tune_hyperparams(self):
         if not self.validate_param_grid(self.param_grid):
@@ -133,8 +155,15 @@ class DiffentialEvolutionTuner:
         for k in a:
             if random.random() <= cr:
                 changed = True
-                if type(member[k]) is float or type(member[k]) is int:
+
+                if type(member[k]) is float:
                     new_member[k] = a[k] + f*(b[k]-c[k])
+                    new_member[k] = self.trim(k, new_member[k])
+
+                elif type(member[k]) is int:
+                    new_member[k] = int(a[k] + f * (b[k] - c[k]))
+                    new_member[k] = self.trim(k, new_member[k])
+
                 elif type(member[k]) is str:
                     # Randomly choose of from one of the population
                     x = random.randint(0, 2)
@@ -192,7 +221,7 @@ if __name__=='__main__':
     de_tuner = DiffentialEvolutionTuner(learner=SVC(),param_grid=paramgrid,
                                         X_train=X_train, Y_train=Y_train,
                                         X_tune=X_tune, Y_tune=Y_tune,
-                                        np=50)
+                                        np=50, goal="f1")
     best_params, best_score = de_tuner.tune_hyperparams()
 
     svc = SVC(**best_params)
