@@ -13,6 +13,7 @@ from preprocess import preprocess
 import logging
 
 
+
 class DiffentialEvolutionTuner:
     "Hyperparameter tuning using Differential Evolution Tuned"
     def __init__(self, learner, param_grid = None,
@@ -180,7 +181,7 @@ class DiffentialEvolutionTuner:
 
 
 if __name__=='__main__':
-    paramgrid = {"kernel": ["rbf","sigmoid", "poly"],
+    paramgrid = {"kernel": ["rbf","sigmoid"],
                  #"C": np.logspace(-9, 9, num=10, base=10),
                  "C": np.linspace(start=1,stop=100000,num=13),
                  "gamma": np.logspace(-9, 9, num=10, base=10)}
@@ -191,12 +192,12 @@ if __name__=='__main__':
     de_tuner = DiffentialEvolutionTuner(learner=SVC(),param_grid=paramgrid,
                                         X_train=X_train, Y_train=Y_train,
                                         X_tune=X_tune, Y_tune=Y_tune,
-                                        np=10)
+                                        np=50)
     best_params, best_score = de_tuner.tune_hyperparams()
 
     svc = SVC(**best_params)
     svc.fit(X_train, Y_train)
     Y_predict = svc.predict(X_test)
-    acc = accuracy_score(Y_test,Y_predict)
+    acc = f1_score(Y_test,Y_predict)
     print("\n\nAccuracy = %f"%acc)
 
