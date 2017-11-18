@@ -26,4 +26,4 @@ class ParamSet:
         return len(self.params)
 
     def __str__(self):
-        return str(self.params)+" | Score = "+self.score
+        return str(self.params)+" | Score = "+str(self.score)

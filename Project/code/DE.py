@@ -98,6 +98,21 @@ class DiffentialEvolutionTuner:
         return population
 
 
+    def n_tune_hyperparams(self, n_DE = 5):
+        '''Execute DE for n iterations with different Generation 0'''
+        best_params = None
+        best_score = -float('inf')
+
+        for i in range(n_DE):
+            self.logger.debug("Executing Iteration #%d of DE"%(i+1))
+            i_params, i_score = self.tune_hyperparams()
+            if i_score > best_score:
+                best_score = i_score
+                best_params = i_params
+
+        return (best_params,best_score)
+
+
     def tune_hyperparams(self):
         if not self.validate_param_grid(self.param_grid):
             raise ValueError
@@ -231,7 +246,8 @@ if __name__=='__main__':
                                         X_train=X_train, Y_train=Y_train,
                                         X_tune=X_tune, Y_tune=Y_tune,
                                         np=20, goal="f1", life=20, cr=0.7, f=0.5)
-    best_params, best_score = de_tuner.tune_hyperparams()
+
+    best_params, best_score = de_tuner.n_tune_hyperparams()
 
     svc = SVC(**best_params.params)
     svc.fit(X_train, Y_train)
