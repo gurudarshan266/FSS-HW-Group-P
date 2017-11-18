@@ -157,7 +157,7 @@ class DiffentialEvolutionTuner:
 
             print( "Best member of population is %s with score = %f" % (str(best_member), float(best_score)) )
 
-        return (best_member, best_score)
+        return (best_member.params, best_score)
 
 
     def extrapolate(self, member, population, cr, f):
@@ -232,6 +232,32 @@ class DiffentialEvolutionTuner:
         return mem.score
 
 
+    def tune_and_evaluate(self, X_test, Y_test, n_DE=5):
+        # Get the best params
+        best_params, tune_score = self.n_tune_hyperparams(n_DE)
+
+        self.learner.set_params(**best_params)
+        self.learner.fit(self.X_train, self.Y_train)
+        Y_predict =  self.learner.predict(X_test)
+        score = 0
+
+        # Select the score based on the goal returned
+        if self.goal == "accuracy":
+            score = accuracy_score(Y_test, Y_predict)
+        elif self.goal == "f1":
+            score = f1_score(Y_test, Y_predict)
+        elif self.goal == "precision":
+            score = precision_score(Y_test, Y_predict)
+        elif self.goal == "recall":
+            score = recall_score(Y_test, Y_predict)
+        elif self.goal == "auc" or self.goal == "roc_auc":
+            score = roc_auc_score(Y_test, Y_predict)
+
+        print("\n\nScore = %f" % score)
+        return (score, best_params, tune_score)
+
+
+
 if __name__=='__main__':
     paramgrid = {"kernel": ["rbf","sigmoid"],
                  "C": np.logspace(-9, 9, num=10, base=10),
@@ -245,13 +271,8 @@ if __name__=='__main__':
     de_tuner = DiffentialEvolutionTuner(learner=SVC(),param_grid=paramgrid,
                                         X_train=X_train, Y_train=Y_train,
                                         X_tune=X_tune, Y_tune=Y_tune,
-                                        np=20, goal="f1", life=20, cr=0.7, f=0.5)
+                                        np=40, goal="precision", life=10, cr=0.7, f=0.5)
 
-    best_params, best_score = de_tuner.n_tune_hyperparams()
+    de_tuner.tune_and_evaluate(X_test,Y_test,1)
 
-    svc = SVC(**best_params.params)
-    svc.fit(X_train, Y_train)
-    Y_predict = svc.predict(X_test)
-    acc = f1_score(Y_test,Y_predict)
-    print("\n\nScore = %f"%acc)
 
