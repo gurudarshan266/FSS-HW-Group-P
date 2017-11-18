@@ -10,6 +10,7 @@ from imblearn.over_sampling import SMOTE
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.svm import SVC
 from preprocess import preprocess
+from ParamSet import ParamSet
 import logging
 import copy
 
@@ -19,7 +20,7 @@ class DiffentialEvolutionTuner:
     def __init__(self, learner, param_grid = None,
                   X_train= None, Y_train = None,
                   X_tune=None, Y_tune=None,
-                  cv=None, np = 50, f = 0.75, cr = 0.3, life = 10, goal = "accuracy"):
+                  cv=None, np = 50, f = 0.75, cr = 0.5, life = 10, goal = "accuracy"):
 
         random.seed()
 
@@ -89,10 +90,10 @@ class DiffentialEvolutionTuner:
         population = []
         random.seed()
         for i in range(np):
-            member = {}
+            member = ParamSet()
             # Create a member by randomly picking up param values from the grid
             for param in self.param_grid:
-                member[param] = random.choice(self.param_grid[param])
+                member[param] = copy.deepcopy(random.choice(self.param_grid[param]))
             population.append(member)
         return population
 
@@ -121,6 +122,7 @@ class DiffentialEvolutionTuner:
                 # Check if the new member's score is better than the member's score
                 if new_mem_score > mem_score:
                     new_generation.append(new_member)
+                    self.logger.debug("New member added : %s" % str(new_member))
 
                     # Update the best score
                     if new_mem_score > best_score:
@@ -145,14 +147,14 @@ class DiffentialEvolutionTuner:
 
     def extrapolate(self, member, population, cr, f):
         population2 = [ m for m in population if m!=member]
-        random.seed(random.randint(1,50))
+        #random.seed()
         other3 = random.sample(population2,3)
         a, b, c = other3
 
-        new_member = copy.deepcopy(member)
+        new_member = member.clone()
         changed = False
 
-        for k in a:
+        for k in a.params:
             if random.uniform(0,1.0) <= cr:
                 changed = True
 
@@ -171,20 +173,25 @@ class DiffentialEvolutionTuner:
 
         # If nothing has changed
         if not changed:
-            k = random.choice(list(a.keys()))
+            k = random.choice(list(a.params.keys()))
             new_member[k] = b[k]
 
         return new_member
 
 
-    def score(self, params):
-        self.logger.debug('Computing score for %s'%str(params))
+    def score(self, mem):
+        #self.logger.debug('Computing score for %s'%str(params))
         #print('Computing score for %s'%str(params))
 
-        #return random.random()
+        # Check if the score was already computed
+        if mem.score is not None:
+            return mem.score
+
+        params = mem.params
 
         # Update the learner params
         # TODO: Check if the learner can be replicated without using the same instance. For multi threading
+        #learner = copy.deepcopy(self.learner)
         self.learner.set_params(**params)
 
         # Only for non-cv path
@@ -197,16 +204,17 @@ class DiffentialEvolutionTuner:
 
             # Select the score based on the goal returned
             if self.goal == "accuracy":
-                return accuracy_score(self.Y_tune, Y_predict)
+                mem.score = accuracy_score(self.Y_tune, Y_predict)
             elif self.goal == "f1":
-                return f1_score(self.Y_tune, Y_predict)
+                mem.score = f1_score(self.Y_tune, Y_predict)
             elif self.goal == "precision":
-                return precision_score(self.Y_tune, Y_predict)
+                mem.score = precision_score(self.Y_tune, Y_predict)
             elif self.goal == "recall":
-                return recall_score(self.Y_tune, Y_predict)
+                mem.score = recall_score(self.Y_tune, Y_predict)
             elif self.goal == "auc" or self.goal == "roc_auc":
-                return roc_auc_score(self.Y_tune, Y_predict)
+                mem.score = roc_auc_score(self.Y_tune, Y_predict)
 
+        return mem.score
 
 
 if __name__=='__main__':
@@ -222,12 +230,12 @@ if __name__=='__main__':
     de_tuner = DiffentialEvolutionTuner(learner=SVC(),param_grid=paramgrid,
                                         X_train=X_train, Y_train=Y_train,
                                         X_tune=X_tune, Y_tune=Y_tune,
-                                        np=50, goal="f1")
+                                        np=20, goal="f1", life=20, cr=0.7, f=0.5)
     best_params, best_score = de_tuner.tune_hyperparams()
 
-    svc = SVC(**best_params)
+    svc = SVC(**best_params.params)
     svc.fit(X_train, Y_train)
     Y_predict = svc.predict(X_test)
     acc = f1_score(Y_test,Y_predict)
-    print("\n\nAccuracy = %f"%acc)
+    print("\n\nScore = %f"%acc)
 
