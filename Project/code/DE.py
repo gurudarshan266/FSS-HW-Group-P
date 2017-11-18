@@ -13,6 +13,8 @@ from preprocess import preprocess
 from ParamSet import ParamSet
 import logging
 import copy
+import param_grid as pg
+from sklearn import tree
 
 
 class DiffentialEvolutionTuner:
@@ -20,16 +22,17 @@ class DiffentialEvolutionTuner:
     def __init__(self, learner, param_grid = None,
                   X_train= None, Y_train = None,
                   X_tune=None, Y_tune=None,
+                  X_test=None, Y_test=None,
                   X_merged=None, Y_merged=None,
                   cv=None, np = 50, f = 0.75, cr = 0.5, life = 10, goal = "accuracy"):
 
-        random.seed()
+        random.seed(422)
 
         # Logger config
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
-        #Initialize the learner and DE params
+        # Initialize the learner and DE params
         self.learner = learner
 
         self.np = np
@@ -52,6 +55,8 @@ class DiffentialEvolutionTuner:
             if X_tune is not None and Y_tune is not None:
                 self.X_tune, self.Y_tune = check_X_y(X_tune, Y_tune)
                 self.X_merged, self.Y_merged = check_X_y(X_merged, Y_merged)
+                self.X_test, self.Y_test = check_X_y(X_test, Y_test)
+
         else:
             self.cv = cv
 
@@ -59,6 +64,9 @@ class DiffentialEvolutionTuner:
 
         # Compute bounds for all the numeric variable
         self.compute_bounds(self.param_grid)
+
+        # Compute the score with untuned (default) learner
+        self.computed_untuned_score()
 
     def validate_param_grid(self,param_grid):
         "Checks for any unsupported params"
@@ -91,7 +99,7 @@ class DiffentialEvolutionTuner:
         '''Generate the initial population'''
 
         population = []
-        random.seed()
+        # random.seed()
         for i in range(np):
             member = ParamSet()
             # Create a member by randomly picking up param values from the grid
@@ -184,7 +192,7 @@ class DiffentialEvolutionTuner:
                     new_member[k] = int(a[k] + f * (b[k] - c[k]))
                     new_member[k] = self.trim(k, new_member[k])
 
-                elif type(member[k]) is str:
+                elif type(member[k]) is str or type(member[k]) is tuple:
                     # Randomly choose of from one of the population
                     x = random.randint(0, 2)
                     new_member[k] = other3[x][k]
@@ -235,10 +243,13 @@ class DiffentialEvolutionTuner:
         return mem.score
 
 
-    def tune_and_evaluate(self, X_test, Y_test, n_DE=5):
+    def tune_and_evaluate(self, n_DE=5):
         # Get the best params
         best_params, tune_score = self.n_tune_hyperparams(n_DE)
 
+        X_test, Y_test = self.X_test, self.Y_test
+
+        # Calculate tuned score
         self.learner.set_params(**best_params)
         self.learner.fit(self.X_merged, self.Y_merged)
         Y_predict =  self.learner.predict(X_test)
@@ -256,27 +267,53 @@ class DiffentialEvolutionTuner:
         elif self.goal == "auc" or self.goal == "roc_auc":
             score = roc_auc_score(Y_test, Y_predict)
 
-        print("\n\nScore = %f" % score)
-        return (score, best_params, tune_score)
+        print("\n\nUntuned Score = %f" % self.untuned_test_score)
+        print("Tuned Score = %f" % score)
+
+        return (score, best_params, tune_score, self.untuned_test_score)
+
+    def computed_untuned_score(self):
+        'Calculate untuned score. Must be called before the tuning'
+
+        self.learner.fit(self.X_merged, self.Y_merged)
+        Y_predict = self.learner.predict(self.X_test)
+        self.untuned_test_score = 0
+
+        # Select the score based on the goal returned
+        if self.goal == "accuracy":
+            self.untuned_test_score = accuracy_score(self.Y_test, Y_predict)
+        elif self.goal == "f1":
+            self.untuned_test_score = f1_score(self.Y_test, Y_predict)
+        elif self.goal == "precision":
+            self.untuned_test_score = precision_score(self.Y_test, Y_predict)
+        elif self.goal == "recall":
+            self.untuned_test_score = recall_score(self.Y_test, Y_predict)
+        elif self.goal == "auc" or self.goal == "roc_auc":
+            self.untuned_test_score = roc_auc_score(self.Y_test, Y_predict)
+        return self.untuned_test_score
+
+
+
+
 
 
 
 if __name__=='__main__':
-    paramgrid = {"kernel": ["rbf","sigmoid"],
-                 "C": np.logspace(-9, 9, num=10, base=10),
-                 #"C": np.linspace(start=1,stop=100000,num=13),
-                 #"gamma": np.logspace(-9, 9, num=10, base=10)
-                 }
+    paramgrid = pg.param_grid['cart']
+    learner = tree.DecisionTreeClassifier()
+    dataset = 'ivy'
 
     # Fetch training, tuning and testing datasets for lucene
-    X_train, Y_train, X_tune, Y_tune, X_test, Y_test, X_merged, Y_merged = preprocess(dataset='lucene', do_smote = True)
+    X,Y = preprocess(dataset=dataset, do_smote = True)
 
-    de_tuner = DiffentialEvolutionTuner(learner=SVC(),param_grid=paramgrid,
-                                        X_train=X_train, Y_train=Y_train,
-                                        X_tune=X_tune, Y_tune=Y_tune,
-                                        X_merged=X_merged, Y_merged=Y_merged,
-                                        np=40, goal="f1", life=10, cr=0.7, f=0.5)
+    de_tuner = DiffentialEvolutionTuner(learner=learner,param_grid=paramgrid,
+                                        X_train=X['train'], Y_train=Y['train'],
+                                        X_tune=X['tune'], Y_tune=Y['tune'],
+                                        X_merged=X['merged'], Y_merged=Y['merged'],
+                                        X_test=X['test'], Y_test=Y['test'],
+                                        np=50, goal="f1", life=10, cr=0.7, f=0.5)
 
-    de_tuner.tune_and_evaluate(X_test,Y_test,1)
+    de_tuner.tune_and_evaluate(5)
+
 
 

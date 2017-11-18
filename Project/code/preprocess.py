@@ -48,14 +48,11 @@ def preprocess(dataset='lucene', do_smote = True):
 
     # SMOTE the training data
     if do_smote:
-        sm = SMOTE(random_state=1516)
+        sm = SMOTE(random_state=1547)
         X['train'], Y['train'] = sm.fit_sample(X['train'], Y['train'])
         X['merged'], Y['merged'] = sm.fit_sample(X['merged'], Y['merged'])
 
-    return (X['train'],Y['train'],
-            X['tune'],Y['tune'],
-            X['test'], Y['test'],
-            X['merged'], Y['merged'])
+    return (X,Y)
 
 if __name__ == '__main__':
     pass
