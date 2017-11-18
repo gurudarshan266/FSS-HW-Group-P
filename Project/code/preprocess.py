@@ -42,14 +42,20 @@ def preprocess(dataset='lucene', do_smote = True):
         # Extract bugs and classify bugs as only binary (0 or 1)
         Y[t] = data[t].bug.apply(bug_classify)
 
+    data['merged'] = pd.concat( [data['train'],data['tune']] )
+    X['merged'] = data['merged'].loc[:, 'wmc':'avg_cc']
+    Y['merged'] = data['merged'].bug.apply(bug_classify)
+
     # SMOTE the training data
     if do_smote:
         sm = SMOTE(random_state=1516)
         X['train'], Y['train'] = sm.fit_sample(X['train'], Y['train'])
+        X['merged'], Y['merged'] = sm.fit_sample(X['merged'], Y['merged'])
 
     return (X['train'],Y['train'],
             X['tune'],Y['tune'],
-            X['test'], Y['test'])
+            X['test'], Y['test'],
+            X['merged'], Y['merged'])
 
 if __name__ == '__main__':
     pass

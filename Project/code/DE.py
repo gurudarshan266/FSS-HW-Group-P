@@ -20,6 +20,7 @@ class DiffentialEvolutionTuner:
     def __init__(self, learner, param_grid = None,
                   X_train= None, Y_train = None,
                   X_tune=None, Y_tune=None,
+                  X_merged=None, Y_merged=None,
                   cv=None, np = 50, f = 0.75, cr = 0.5, life = 10, goal = "accuracy"):
 
         random.seed()
@@ -50,6 +51,7 @@ class DiffentialEvolutionTuner:
             # Check that X_train and Y_train have correct shape
             if X_tune is not None and Y_tune is not None:
                 self.X_tune, self.Y_tune = check_X_y(X_tune, Y_tune)
+                self.X_merged, self.Y_merged = check_X_y(X_merged, Y_merged)
         else:
             self.cv = cv
 
@@ -63,6 +65,7 @@ class DiffentialEvolutionTuner:
         model_params = self.learner.get_params().keys()
         for k in param_grid:
             if k not in model_params:
+                print("%s is not supported"%k)
                 return False
         return True
 
@@ -237,7 +240,7 @@ class DiffentialEvolutionTuner:
         best_params, tune_score = self.n_tune_hyperparams(n_DE)
 
         self.learner.set_params(**best_params)
-        self.learner.fit(self.X_train, self.Y_train)
+        self.learner.fit(self.X_merged, self.Y_merged)
         Y_predict =  self.learner.predict(X_test)
         score = 0
 
@@ -266,12 +269,13 @@ if __name__=='__main__':
                  }
 
     # Fetch training, tuning and testing datasets for lucene
-    X_train, Y_train, X_tune, Y_tune, X_test, Y_test = preprocess(dataset='lucene', do_smote = True)
+    X_train, Y_train, X_tune, Y_tune, X_test, Y_test, X_merged, Y_merged = preprocess(dataset='lucene', do_smote = True)
 
     de_tuner = DiffentialEvolutionTuner(learner=SVC(),param_grid=paramgrid,
                                         X_train=X_train, Y_train=Y_train,
                                         X_tune=X_tune, Y_tune=Y_tune,
-                                        np=40, goal="precision", life=10, cr=0.7, f=0.5)
+                                        X_merged=X_merged, Y_merged=Y_merged,
+                                        np=40, goal="f1", life=10, cr=0.7, f=0.5)
 
     de_tuner.tune_and_evaluate(X_test,Y_test,1)
 
