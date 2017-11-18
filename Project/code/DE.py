@@ -11,7 +11,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from sklearn.svm import SVC
 from preprocess import preprocess
 import logging
-
+import copy
 
 
 class DiffentialEvolutionTuner:
@@ -21,7 +21,7 @@ class DiffentialEvolutionTuner:
                   X_tune=None, Y_tune=None,
                   cv=None, np = 50, f = 0.75, cr = 0.3, life = 10, goal = "accuracy"):
 
-        random.seed(int(time.time()*100))
+        random.seed()
 
         # Logger config
         logging.basicConfig(level=logging.DEBUG)
@@ -41,7 +41,6 @@ class DiffentialEvolutionTuner:
         # Check that X_train and Y_train have correct shape
         if X_train is not None and Y_train is not None:
             self.X_train, self.Y_train = check_X_y(X_train, Y_train)
-            # TODO: add smote
 
         self.cv_required = cv is not None
 
@@ -66,6 +65,7 @@ class DiffentialEvolutionTuner:
                 return False
         return True
 
+
     def compute_bounds(self, param_grid):
         model_params = self.learner.get_params().keys()
         self.bounds = {}
@@ -87,9 +87,9 @@ class DiffentialEvolutionTuner:
         '''Generate the initial population'''
 
         population = []
+        random.seed()
         for i in range(np):
             member = {}
-            random.seed(random.randint(1,1000))
             # Create a member by randomly picking up param values from the grid
             for param in self.param_grid:
                 member[param] = random.choice(self.param_grid[param])
@@ -109,7 +109,7 @@ class DiffentialEvolutionTuner:
 
         for gen in range(1,self.life+1):
             print("\nRunning generation %d\n"%gen)
-            print(*population,sep='\n')
+            #print(*population,sep='\n')
 
             new_generation = []
             for member in population:
@@ -149,11 +149,11 @@ class DiffentialEvolutionTuner:
         other3 = random.sample(population2,3)
         a, b, c = other3
 
-        new_member = member
+        new_member = copy.deepcopy(member)
         changed = False
 
         for k in a:
-            if random.random() <= cr:
+            if random.uniform(0,1.0) <= cr:
                 changed = True
 
                 if type(member[k]) is float:
@@ -211,9 +211,10 @@ class DiffentialEvolutionTuner:
 
 if __name__=='__main__':
     paramgrid = {"kernel": ["rbf","sigmoid"],
-                 #"C": np.logspace(-9, 9, num=10, base=10),
-                 "C": np.linspace(start=1,stop=100000,num=13),
-                 "gamma": np.logspace(-9, 9, num=10, base=10)}
+                 "C": np.logspace(-9, 9, num=10, base=10),
+                 #"C": np.linspace(start=1,stop=100000,num=13),
+                 #"gamma": np.logspace(-9, 9, num=10, base=10)
+                 }
 
     # Fetch training, tuning and testing datasets for lucene
     X_train, Y_train, X_tune, Y_tune, X_test, Y_test = preprocess(dataset='lucene', do_smote = True)
