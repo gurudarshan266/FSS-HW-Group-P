@@ -1,7 +1,6 @@
 import pandas as pd
-import sys
 from imblearn.over_sampling import SMOTE
-
+from defines import *
 
 def preprocess(dataset='lucene', do_smote = True):
     bug_classify = lambda x: 1 if x > 0 else 0
@@ -48,7 +47,7 @@ def preprocess(dataset='lucene', do_smote = True):
 
     # SMOTE the training data
     if do_smote:
-        sm = SMOTE(random_state=1547)
+        sm = SMOTE(random_state=SEED_SMOTE)
         X['train'], Y['train'] = sm.fit_sample(X['train'], Y['train'])
         X['merged'], Y['merged'] = sm.fit_sample(X['merged'], Y['merged'])
 

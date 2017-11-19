@@ -269,9 +269,10 @@ class DiffentialEvolutionTuner:
         elif self.goal == "auc" or self.goal == "roc_auc":
             score = roc_auc_score(Y_test, Y_predict)
 
-        print("\n\nUntuned Test Score = %f" % self.untuned_test_score)
+        print("Untuned Test Score = %f" % self.untuned_test_score)
         print("Tuned Test Score = %f" % score)
         print("Params = %s"%best_params)
+        print("\n\n")
 
 
         return (score, best_params, tune_score, self.untuned_test_score)
