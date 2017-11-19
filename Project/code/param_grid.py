@@ -1,4 +1,5 @@
 import numpy as np
+from defines import *
 
 param_grid = {}
 
@@ -8,7 +9,7 @@ param_grid['cart'] = {
     "max_depth": range(1, 51),
     "min_samples_split": range(2, 21),
     "min_samples_leaf": range(1, 21),
-    "random_state": [1542]
+    "random_state": [SEED_CART]
 }
 
 # Random Forests
@@ -32,11 +33,15 @@ param_grid['svm'] = {
 }
 
 # Artificial Neural Nets (Multi Layer Perceptron Classifier)
-param_grid['ann'] = {
+param_grid['mlp'] = {
     "hidden_layer_sizes": [(100,), (100,100,), (100,100,100,100,), (100,100,100,100,100,)],
     "activation": ['identity', 'logistic', 'tanh', 'relu'],
     "max_iter": range(100,400,50)
-
 }
 
+#K-Nearest Neighbors
+param_grid['knn'] = {
+    "n_neighbors": range(1,10),
+    "weights": ["uniform", "distance"]
+}
 

@@ -136,7 +136,7 @@ class DiffentialEvolutionTuner:
         best_member = None
 
         for gen in range(1,self.life+1):
-            print("\nRunning generation %d\n"%gen)
+            self.logger.debug("\nRunning generation %d\n"%gen)
             #print(*population,sep='\n')
 
             new_generation = []
@@ -167,7 +167,7 @@ class DiffentialEvolutionTuner:
             # Update the population to new generation
             population = new_generation
 
-            print( "Best member of population is %s with score = %f" % (str(best_member), float(best_score)) )
+            self.logger.debug( "Best member of population is %s with score = %f" % (str(best_member), float(best_score)) )
 
         return (best_member.params, best_score)
 
@@ -268,8 +268,10 @@ class DiffentialEvolutionTuner:
         elif self.goal == "auc" or self.goal == "roc_auc":
             score = roc_auc_score(Y_test, Y_predict)
 
-        print("\n\nUntuned Score = %f" % self.untuned_test_score)
-        print("Tuned Score = %f" % score)
+        print("\n\nUntuned Test Score = %f" % self.untuned_test_score)
+        print("Tuned Test Score = %f" % score)
+        print("Params = %s"%best_params)
+
 
         return (score, best_params, tune_score, self.untuned_test_score)
 
