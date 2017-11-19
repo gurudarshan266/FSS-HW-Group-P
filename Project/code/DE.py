@@ -15,6 +15,7 @@ import logging
 import copy
 import param_grid as pg
 from sklearn import tree
+from sklearn.neural_network import MLPClassifier
 
 
 class DiffentialEvolutionTuner:
@@ -181,7 +182,7 @@ class DiffentialEvolutionTuner:
         changed = False
 
         for k in a.params:
-            if random.uniform(0,1.0) <= cr:
+            if random.random() <= cr:
                 changed = True
 
                 if type(member[k]) is float:
@@ -300,8 +301,8 @@ class DiffentialEvolutionTuner:
 
 if __name__=='__main__':
     paramgrid = pg.param_grid['cart']
-    learner = tree.DecisionTreeClassifier()
-    dataset = 'ivy'
+    learner = tree.DecisionTreeClassifier(random_state=1542)
+    dataset = 'lucene'
 
     # Fetch training, tuning and testing datasets for lucene
     X,Y = preprocess(dataset=dataset, do_smote = True)
@@ -311,9 +312,9 @@ if __name__=='__main__':
                                         X_tune=X['tune'], Y_tune=Y['tune'],
                                         X_merged=X['merged'], Y_merged=Y['merged'],
                                         X_test=X['test'], Y_test=Y['test'],
-                                        np=50, goal="f1", life=10, cr=0.7, f=0.5)
+                                        np=50, goal="f1", life=10, cr=0.8, f=0.5)
 
-    de_tuner.tune_and_evaluate(5)
+    de_tuner.tune_and_evaluate(1)
 
 
 

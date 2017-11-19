@@ -7,7 +7,8 @@ param_grid['cart'] = {
     "max_features": np.linspace(start=0.1, stop=1.0, num=99),
     "max_depth": range(1, 51),
     "min_samples_split": range(2, 21),
-    "min_samples_leaf": range(1, 21)
+    "min_samples_leaf": range(1, 21),
+    "random_state": [1542]
 }
 
 # Random Forests
@@ -16,7 +17,7 @@ param_grid['rf'] = {
     "max_leaf_nodes": range(1, 51),
     "min_samples_split": range(2, 21),
     "min_samples_leaf": range(1, 21),
-    "n_estimators": range(50, 151)
+    "n_estimators": range(50, 151),
 }
 
 # Naive Bayes
