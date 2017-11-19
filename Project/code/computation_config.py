@@ -1,5 +1,3 @@
-from DE import DiffentialEvolutionTuner
-from preprocess import preprocess
 from defines import *
 
 from sklearn.svm import SVC
@@ -24,7 +22,7 @@ learners = ["cart",
             "rf",
             "nb",
             "svm",
-            "mlp",
+            #"mlp",
             "knn"]
 
 learner_objs = {"cart": tree.DecisionTreeClassifier(random_state=SEED_CART),

@@ -16,6 +16,7 @@ import copy
 import param_grid as pg
 from sklearn import tree
 from sklearn.neural_network import MLPClassifier
+import computation_config as cc
 
 
 class DiffentialEvolutionTuner:
@@ -302,8 +303,8 @@ class DiffentialEvolutionTuner:
 
 
 if __name__=='__main__':
-    paramgrid = pg.param_grid['cart']
-    learner = tree.DecisionTreeClassifier(random_state=1542)
+    paramgrid = pg.param_grid['rf']
+    learner = cc.learner_objs['rf']
     dataset = 'lucene'
 
     # Fetch training, tuning and testing datasets for lucene

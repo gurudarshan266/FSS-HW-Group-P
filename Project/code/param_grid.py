@@ -15,7 +15,7 @@ param_grid['cart'] = {
 # Random Forests
 param_grid['rf'] = {
     "max_features": np.linspace(start=0.1, stop=1.0, num=99),
-    "max_leaf_nodes": range(1, 51),
+    "max_leaf_nodes": range(2, 51),
     "min_samples_split": range(2, 21),
     "min_samples_leaf": range(1, 21),
     "n_estimators": range(50, 151),
@@ -23,7 +23,7 @@ param_grid['rf'] = {
 
 # Naive Bayes
 param_grid['nb'] = {
-    "priors":  {None}
+    "priors":  [None]
 }
 
 # Support Vector Machine
