@@ -1,0 +1,6 @@
+Learner|Best Params|Untuned Score|Tuned Score
+cart|{'min_samples_split': 8, 'min_samples_leaf': 2, 'random_state': 1542, 'max_features': 0.9816326530612246, 'max_depth': 15}|0.311927|0.285714
+rf|{'min_samples_split': 14, 'n_estimators': 108, 'max_leaf_nodes': 7, 'max_features': 0.86224489795918369, 'min_samples_leaf': 1}|0.270833|0.321429
+nb|{'priors': None}|0.352941|0.352941
+svm|{'kernel': 'rbf', 'C': 10.0}|0.034483|0.035088
+knn|{'weights': 'uniform', 'n_neighbors': 8}|0.235294|0.237500
