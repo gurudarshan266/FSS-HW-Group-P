@@ -20,7 +20,7 @@ clf2 = RandomForestClassifier(random_state=1)
 clf3 = GaussianNB()
 clf4 = SVC()
 lr = LogisticRegression()
-sclf = StackingClassifier(classifiers=[ clf1, clf2, clf3],
+sclf = StackingClassifier(classifiers=[ clf1, clf2],
                           meta_classifier=lr)
 
 params = {'kneighborsclassifier__n_neighbors': [1,2,3,4,5,6,8],
@@ -36,7 +36,7 @@ X_train, Y_train, X_tune, Y_tune, X_test, Y_test = preprocess(dataset='lucene', 
 de_tuner = DiffentialEvolutionTuner(learner=sclf, param_grid=params,
                                     X_train=X_train, Y_train=Y_train,
                                     X_tune=X_tune, Y_tune=Y_tune,
-                                    np=100, goal="accuracy")
+                                    np=30, goal="f1")
 best_params, best_score = de_tuner.tune_hyperparams()
 
 sclf.fit(X_train, Y_train)

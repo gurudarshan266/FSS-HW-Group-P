@@ -22,7 +22,9 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import RepeatedKFold
 from defines import *
 import sys
-
+import os
+import ensembles
+import best_param_ensemble
 
 def compute_score(goal = "f1", Y_predict = None, Y_test = None):
     # Select the score based on the goal
@@ -75,16 +77,20 @@ def execute_cross_val(learner, goal, X, Y, k=5):
 
 if __name__=='__main__':
 
-    goal = "f1"
-    dataset = 'jedit1'
+    tune_ensemble = True
+
+    goal = "accuracy"
+    dataset = 'lucene'
     if len(sys.argv) > 1:
         dataset = sys.argv[1]
 
     results_base_dir = "../results/%s/"%goal
 
-    k_file = open(results_base_dir+"%s.kout"%(dataset), "w+")
+    k_file_name = results_base_dir+"%s.kout"%(dataset)
+    k_file = open(k_file_name, "w+")
 
     results = {}
+    run_times = {}
     header = "Learner|Best Params|Untuned Score|Tuned Score"
 
     with open(results_base_dir+"%s_results.csv"%dataset, "w+") as file:
@@ -104,6 +110,7 @@ if __name__=='__main__':
             # Fetch training, tuning and testing datasets for the dataset
             X,Y = preprocess(dataset=dataset, do_smote = True)
 
+            start_time = time.time()
             # Instantiate the tuner
             de_tuner = DiffentialEvolutionTuner(learner=learner_obj,param_grid=paramgrid,
                                                 X_train=X['train'], Y_train=Y['train'],
@@ -112,9 +119,14 @@ if __name__=='__main__':
                                                 X_test=X['test'], Y_test=Y['test'],
                                                 np=50, goal=goal, life=10, cr=0.8, f=0.5)
 
+
             # Run the tuner
             tuned_test_score, best_params, tune_score, untuned_test_score = de_tuner.tune_and_evaluate(n_DE=1)
 
+            end_time = time.time()
+
+            # Compute the time taken by the ensemble
+            run_times[learner] = end_time - start_time
             # Save the resutls
             results[dataset][learner] = (best_params, untuned_test_score, tuned_test_score)
 
@@ -136,10 +148,65 @@ if __name__=='__main__':
             k_file.flush()
 
 
+        k_file.close()
+        print(run_times)
+
+        # Run Scott-Knott test to get the learners ranks
+        sk_ranks = {}
+        sk_out = os.popen('cat %s | python SK.py'%k_file_name)
+        sk_out = sk_out.readlines()[3:] # output starts from line 4
+        for line in sk_out:
+            line = line.split(",")
+            line = [ x.strip() for x in line]
+            sk_ranks[line[1]] = int(line[0])
+
+
+        # Tune ensemble learner
+        if tune_ensemble:
+            learner = 'tuned_ensemble'
+            print("DATASET = %s | LEARNER = %s" % (dataset, learner))
+            print(sk_ranks)
+
+            start_time = time.time()
+
+            # Get the tuned scores
+            tuned_test_score, best_params, tune_score, untuned_test_score = \
+                ensembles.ensemble_tune(goal=goal,dataset=dataset,sk_ranks=sk_ranks)
+
+            end_time = time.time()
+
+            run_times[learner] = end_time-start_time
+
+            best_params_to_print = {}
+            for k in best_params:
+                if '__' in k:
+                    best_params_to_print[k] = best_params[k]
+            # Write results to file
+            file.write("%s|%s|%f|%f\n" % (learner, best_params_to_print, untuned_test_score, tuned_test_score))
+            file.flush()
+
+            results[dataset][learner] = (best_params_to_print, untuned_test_score, tuned_test_score)
+
+
+            # Best param ensemble
+            learner = 'best_param_ensemble'
+            best_param_score = best_param_ensemble.tune_best_param_ensembles(goal=goal, dataset=dataset, best_params=results,sk_ranks=sk_ranks)
+            best_param_untuned_score = results[dataset]["tuned_ensemble"][1]
+            # Write results to file
+            file.write("%s|%s|%f|%f\n" % (learner, {}, best_param_untuned_score, best_param_score))
+            file.flush()
+
+            results[dataset][learner] = ({}, best_param_untuned_score, best_param_score)
+
+        file.write("\n\nTuning Times:\n")
+        file.write(str(run_times))
+        file.flush()
+
+
     # Dump the python dictionary to a file
     with open(results_base_dir+"%s_tune.py"%(dataset),"w+") as res_file:
         res_file.write(str(results))
     print(results)
+    print(run_times)
 
-    k_file.close()
 

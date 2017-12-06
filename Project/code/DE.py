@@ -194,7 +194,7 @@ class DiffentialEvolutionTuner:
                     new_member[k] = int(a[k] + f * (b[k] - c[k]))
                     new_member[k] = self.trim(k, new_member[k])
 
-                elif type(member[k]) is str or type(member[k]) is tuple:
+                elif type(member[k]) is str or type(member[k]) is tuple or type(member[k]) is list:
                     # Randomly choose of from one of the population
                     x = random.randint(0, 2)
                     new_member[k] = other3[x][k]
@@ -271,7 +271,8 @@ class DiffentialEvolutionTuner:
 
         print("Untuned Test Score = %f" % self.untuned_test_score)
         print("Tuned Test Score = %f" % score)
-        print("Params = %s"%best_params)
+        print("Params = ")
+        print(*best_params,sep="\n")
         print("\n\n")
 
 

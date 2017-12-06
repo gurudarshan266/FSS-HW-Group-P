@@ -19,6 +19,7 @@ param_grid['rf'] = {
     "min_samples_split": range(2, 21),
     "min_samples_leaf": range(1, 21),
     "n_estimators": range(50, 151),
+    "random_state":[SEED_RF],
 }
 
 # Naive Bayes
