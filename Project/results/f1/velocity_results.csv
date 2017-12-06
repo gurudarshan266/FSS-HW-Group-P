@@ -1,6 +1,12 @@
 Learner|Best Params|Untuned Score|Tuned Score
-cart|{'max_depth': 1, 'min_samples_leaf': 14, 'max_features': 0.55000000000000004, 'min_samples_split': 9, 'random_state': 1542}|0.549550|0.511785
-rf|{'n_estimators': 50, 'min_samples_leaf': 17, 'max_features': 0.10000000000000001, 'max_leaf_nodes': 6, 'min_samples_split': 11}|0.564103|0.566667
+cart|{'max_depth': 1, 'min_samples_leaf': 5, 'random_state': 1542, 'min_samples_split': 4, 'max_features': 0.66938775510204085}|0.549550|0.511785
+rf|{'n_estimators': 80, 'random_state': 1542, 'max_leaf_nodes': 43, 'max_features': 0.12755102040816327, 'min_samples_leaf': 20, 'min_samples_split': 16}|0.564103|0.576132
 nb|{'priors': None}|0.359375|0.359375
-svm|{'C': 1000.0, 'kernel': 'rbf'}|0.588235|0.583333
-knn|{'weights': 'distance', 'n_neighbors': 1}|0.502463|0.508929
+svm|{'kernel': 'rbf', 'C': 10.0}|0.588235|0.584362
+knn|{'n_neighbors': 1, 'weights': 'distance'}|0.502463|0.508929
+tuned_ensemble|{'nb__priors': None, 'cart__random_state': 1542, 'cart__max_depth': 50, 'rf__n_estimators': 135, 'rf__max_leaf_nodes': 44, 'rf__min_samples_split': 15, 'knn__n_neighbors': 1, 'cart__max_features': 0.70612244897959187, 'svm__kernel': 'rbf', 'knn__weights': 'uniform', 'cart__min_samples_split': 8, 'rf__random_state': 1542, 'rf__min_samples_leaf': 16, 'rf__max_features': 0.47653061224489801, 'svm__C': 1000.0, 'cart__min_samples_leaf': 1}|0.556863|0.553191
+best_param_ensemble|{}|0.556863|0.556863
+
+
+Tuning Times:
+{'cart': 1.2817585468292236, 'rf': 151.08970880508423, 'knn': 2.3114428520202637, 'nb': 1.4439995288848877, 'svm': 7.839189052581787, 'tuned_ensemble': 721.6985540390015}
