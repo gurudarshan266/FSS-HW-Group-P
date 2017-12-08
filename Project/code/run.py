@@ -63,7 +63,7 @@ def classify(learner, goal, X,Y,train,test):
     return score
 
 
-
+# Performs 5x5 cross val
 def execute_cross_val(learner, goal, X, Y, k=5):
     results =[]
     random_state = 12883823

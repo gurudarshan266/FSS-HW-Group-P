@@ -1,6 +1,8 @@
 import pandas as pd
 from imblearn.over_sampling import SMOTE
 from defines import *
+import computation_config as cc
+
 
 def preprocess(dataset='lucene', do_smote = True):
     bug_classify = lambda x: 1 if x > 0 else 0
@@ -45,13 +47,20 @@ def preprocess(dataset='lucene', do_smote = True):
     X['merged'] = data['merged'].loc[:, 'wmc':'avg_cc']
     Y['merged'] = data['merged'].bug.apply(bug_classify)
 
+    # print(dataset)
+    # print(pd.Series(Y['merged']).value_counts())
+
     # SMOTE the training data
     if do_smote:
         sm = SMOTE(random_state=SEED_SMOTE)
         X['train'], Y['train'] = sm.fit_sample(X['train'], Y['train'])
         X['merged'], Y['merged'] = sm.fit_sample(X['merged'], Y['merged'])
 
+
     return (X,Y)
 
 if __name__ == '__main__':
-    pass
+    # preprocess(dataset='lucene', do_smote=True)
+    for dataset in cc.datasets:
+        print("------------")
+        preprocess(dataset=dataset, do_smote=True)

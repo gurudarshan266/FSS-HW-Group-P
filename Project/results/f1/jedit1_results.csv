@@ -1,12 +1,12 @@
 Learner|Best Params|Untuned Score|Tuned Score
-cart|{'max_features': 0.55000000000000004, 'min_samples_leaf': 4, 'min_samples_split': 20, 'max_depth': 50, 'random_state': 1542}|0.562874|0.545455
-rf|{'n_estimators': 106, 'max_leaf_nodes': 37, 'min_samples_split': 2, 'max_features': 0.86224489795918369, 'min_samples_leaf': 2, 'random_state': 1542}|0.596273|0.603550
+cart|{'min_samples_split': 7, 'min_samples_leaf': 2, 'random_state': 1542, 'max_features': 0.3387755102040817, 'max_depth': 7}|0.562874|0.593023
+rf|{'min_samples_split': 2, 'n_estimators': 65, 'max_leaf_nodes': 38, 'max_features': 0.63265306122448983, 'min_samples_leaf': 1, 'random_state': 1542}|0.596273|0.590361
 nb|{'priors': None}|0.596273|0.596273
-svm|{'kernel': 'rbf', 'C': 10.0}|0.600858|0.606061
-knn|{'weights': 'distance', 'n_neighbors': 4}|0.559633|0.586207
-tuned_ensemble|{'cart__max_depth': 30, 'cart__min_samples_split': 11, 'cart__max_features': 0.47653061224489801, 'rf__random_state': 1542, 'rf__min_samples_split': 12, 'cart__random_state': 1542, 'rf__min_samples_leaf': 1, 'svm__C': 9.9999999999999995e-08, 'knn__n_neighbors': 1, 'rf__max_leaf_nodes': 43, 'rf__max_features': 0.78877551020408165, 'nb__priors': None, 'cart__min_samples_leaf': 6, 'svm__kernel': 'rbf', 'knn__weights': 'distance', 'rf__n_estimators': 140}|0.617143|0.629834
-best_param_ensemble|{}|0.617143|0.617143
+svm|{'C': 10.0, 'kernel': 'rbf'}|0.600858|0.606061
+knn|{'n_neighbors': 4, 'weights': 'distance'}|0.559633|0.586207
+tuned_ensemble|{'rf__n_estimators': 92, 'cart__max_depth': 50, 'rf__random_state': 1542, 'knn__weights': 'distance', 'nb__priors': None, 'cart__max_features': 1.0, 'svm__kernel': 'rbf', 'cart__min_samples_split': 15, 'knn__n_neighbors': 2, 'svm__C': 10.0, 'cart__random_state': 1542, 'rf__max_leaf_nodes': 31, 'rf__min_samples_leaf': 1, 'rf__max_features': 0.93571428571428572, 'rf__min_samples_split': 3, 'cart__min_samples_leaf': 12}|0.596273|0.590361
+best_param_ensemble|{}|0.596273|0.583851
 
 
 Tuning Times:
-{'svm': 12.159631490707397, 'knn': 3.18098521232605, 'cart': 1.5874865055084229, 'tuned_ensemble': 848.1536781787872, 'rf': 166.56772756576538, 'nb': 1.3548564910888672}
+{'nb': 1.179527759552002, 'tuned_ensemble': 667.8150503635406, 'svm': 11.703303337097168, 'cart': 1.8575215339660645, 'knn': 3.1630756855010986, 'rf': 168.98006987571716}

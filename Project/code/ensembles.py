@@ -15,17 +15,16 @@ def get_ensemble_params(learners, ensemble_name):
     pg.param_grid[ensemble_name] = result
     return result
 
-if __name__ == '__main__':
-    goal = "f1"
-    dataset = "xalan1"
+def ensemble_tune(goal='f1',dataset='lucene',sk_ranks=None):
     ensemble_estimators = []
     ensemble_weights = []
+    sk_ranks = sk_ranks or cc.ensemble_weights[goal][dataset]
 
     # add the learners to the ensemble
     for learner in cc.learners:
         # Append ensemble learners and their correspondig weights based on the results from Scott-Knott test
-        ensemble_estimators.append( (learner,cc.learner_objs[learner],) )
-        weight = cc.ensemble_weights[goal][dataset][learner]
+        ensemble_estimators.append( (learner,cc.learner_objs2[learner],) )
+        weight = sk_ranks[learner]
         ensemble_weights.append(weight)
 
 
@@ -55,9 +54,15 @@ if __name__ == '__main__':
                                         X_tune=X['tune'], Y_tune=Y['tune'],
                                         X_merged=X['merged'], Y_merged=Y['merged'],
                                         X_test=X['test'], Y_test=Y['test'],
-                                        np=50, goal=goal, life=10, cr=0.8, f=0.5)
+                                        np=100, goal=goal, life=10, cr=0.8, f=0.5)
 
     # Run the tuner
     tuned_test_score, best_params, tune_score, untuned_test_score = de_tuner.tune_and_evaluate(n_DE=1)
 
+    return (tuned_test_score, best_params, tune_score, untuned_test_score)
 
+
+if __name__ == '__main__':
+    goal = 'f1'
+    dataset = 'lucene'
+    ensemble_tune(goal=goal, dataset=dataset)
