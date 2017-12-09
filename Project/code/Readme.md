@@ -12,6 +12,9 @@ Start by downloading all the datasets required by the project by executing the `
 * XALAN
 * XERCES
 
+All the code is written in Python3. Please ensure `pip3 install imblearn pandas` is run before executing `run.py` .
+
+`run.py` is the central file responsible for the complete flow of the algorithm. 
 
 After all the datasets are successfully downloaded, run:<br>
 `python3 run.py <dataset> <f1|accuracy>`
