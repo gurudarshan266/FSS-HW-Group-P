@@ -17,7 +17,7 @@ After all the datasets are successfully downloaded, run:<br>
 `python3 run.py <dataset> <f1|accuracy>`
 <br><br>
 
-Alternatively, `multi_run.sh` can be executed which parallelly deploys multiple jobs of `run.py` each working on a single dataset.
+Alternatively, `multi_run.sh` can be executed which deploys multiple jobs of `run.py` (in parallel) each working on a single dataset.
 
 ---
 
