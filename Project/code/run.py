@@ -84,6 +84,9 @@ if __name__=='__main__':
     if len(sys.argv) > 1:
         dataset = sys.argv[1]
 
+    if len(sys.argv) > 2:
+        goal = sys.argv[2]
+
     results_base_dir = "../results/%s/"%goal
 
     k_file_name = results_base_dir+"%s.kout"%(dataset)
