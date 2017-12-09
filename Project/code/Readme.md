@@ -1,4 +1,4 @@
-# Impact of tuning on Ensemble learners
+# Impact of Parameter Tuning and Ensemble Methods on Fault Prediction Models (Group P)
 
 ## Description
 The project compares the performance (F1-score and Accuracy) of ensemble learners with that of individual learners.
